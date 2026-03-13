@@ -1,26 +1,54 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-main: #01080E;
+  --bg-layout: #011627;
+  --bg-sidebar: #011221;
+  --border-color: #1E2D3D;
+
+  --text-white: #FFFFFF;
+  --text-comment: #607B96;
+  --text-off-white: #E5E9F0;
+
+  --accent-orange: #FEA55F;
+  --accent-green: #43D9AD;
+  --accent-blue: #4D5BCE;
+  --accent-pink: #E99287;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--bg-main);
+  color: var(--text-white);
+  font-family: 'Fira Code', monospace;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #1E2D3D; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #2B3D4F; }
+
+.github-link:hover { text-decoration: underline; }
+
+/* ── Mobile overrides ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  html, body {
+    overflow: auto;
+    height: auto;
+    min-height: 100%;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
