@@ -111,6 +111,7 @@ export default async function HomePage() {
             <p style={{ color: "#607B96", fontSize: "13px", fontFamily: "'Fira Code', monospace" }}>
               {"// complete the game to continue"}
             </p>
+            
             <p style={{ color: "#607B96", fontSize: "13px", fontFamily: "'Fira Code', monospace" }}>
               {"// you can also see it on my Github page"}
             </p>
