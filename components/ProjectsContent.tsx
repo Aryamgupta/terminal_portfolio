@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface Project {
-  _id: string;
+  id: string;
   title: string;
   des: string;
   imageLink?: string;
@@ -13,35 +14,9 @@ interface Project {
 
 interface Props {
   projects: Project[];
+  techIcons: Array<{ name: string; icon: string }>;
+  skillCategories: Array<{ name: string; skills: string[] }>;
 }
-
-/* tech icons map */
-const TECH_ICONS: Record<string, string> = {
-  React: "⚛",
-  "Next.js": "△",
-  "Node.js": "⬡",
-  MongoDB: "🍃",
-  TypeScript: "TS",
-  Vue: "∨",
-  HTML: "📄",
-  CSS: "🎨",
-  Angular: "🅐",
-  Gatsby: "💜",
-  Flutter: "🐦",
-  Express: "⬡",
-  JavaScript: "JS",
-};
-
-const FILTERS = [
-  "React",
-  "Next.js",
-  "Node.js",
-  "MongoDB",
-  "TypeScript",
-  "Vue",
-  "HTML",
-  "CSS",
-];
 
 function slugify(title: string) {
   return title
@@ -50,8 +25,20 @@ function slugify(title: string) {
     .replace(/^-|-$/g, "");
 }
 
-export default function ProjectsContent({ projects }: Props) {
+export default function ProjectsContent({ projects, techIcons, skillCategories }: Props) {
+  const isMobile = useIsMobile();
+  const [filterOpen, setFilterOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  // Create lookup for icons
+  const techIconMap: Record<string, string> = {};
+  techIcons.forEach(ti => {
+    techIconMap[ti.name] = ti.icon;
+  });
+
+  // Flatten all skills for filters or use skillCategories
+  const allFilters = skillCategories.flatMap(sc => sc.skills);
+  const uniqueFilters = Array.from(new Set(allFilters));
 
   const toggleFilter = (f: string) =>
     setSelected((prev) => {
@@ -70,173 +57,107 @@ export default function ProjectsContent({ projects }: Props) {
             p.techStack.some((t) => selected.has(t))
         );
 
+  const grid = (
+    <div
+      style={{
+        flex: 1,
+        padding: isMobile ? "0" : "28px",
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(260px, 1fr))",
+        gap: isMobile ? "32px" : "24px",
+        alignContent: "start",
+      }}
+    >
+      {filtered.length === 0 ? (
+        <div style={{ gridColumn: "1 / -1", color: "#607B96", fontFamily: "'Fira Code', monospace", fontSize: "13px", paddingTop: "40px" }}>
+          {"// No projects match the selected filters"}
+        </div>
+      ) : (
+        filtered.map((project, idx) => (
+          <ProjectCard key={project.id} project={project} count={idx + 1} techIconMap={techIconMap} />
+        ))
+      )}
+    </div>
+  );
+
+  const chipsBar = selected.size > 0 && (
+    <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "8px", padding: "10px 16px", borderBottom: "1px solid #1E2D3D", flexShrink: 0 }}>
+      <span style={{ color: "#607B96", fontFamily: "'Fira Code', monospace", fontSize: "11px" }}>
+        {"// projects /"}
+      </span>
+      {Array.from(selected).map((f, i) => (
+        <React.Fragment key={f}>
+          {i > 0 && <span style={{ color: "#607B96", fontFamily: "'Fira Code', monospace", fontSize: "12px" }}>;</span>}
+          <span style={{ color: "#FFFFFF", fontFamily: "'Fira Code', monospace", fontSize: "12px" }}>{f}</span>
+        </React.Fragment>
+      ))}
+      <button onClick={() => setSelected(new Set())} style={{ background: "none", border: "none", color: "#607B96", cursor: "pointer", fontSize: "16px", lineHeight: 1, padding: "0 4px" }}>×</button>
+    </div>
+  );
+
+  const filterList = (
+    <div style={{ padding: "8px 0" }}>
+      {uniqueFilters.map((f) => (
+        <label key={f} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 16px 8px 20px", cursor: "pointer", color: selected.has(f) ? "#FFFFFF" : "#607B96", fontSize: "13px", fontFamily: "'Fira Code', monospace", transition: "color 0.15s" }}>
+          <input type="checkbox" checked={selected.has(f)} onChange={() => toggleFilter(f)} style={{ width: "14px", height: "14px", accentColor: "#43D9AD", cursor: "pointer", flexShrink: 0 }} />
+          <span style={{ width: "20px", textAlign: "center", fontSize: "13px", color: selected.has(f) ? "#FFFFFF" : "#4D5BCE" }}>{techIconMap[f] || "◆"}</span>
+          {f}
+        </label>
+      ))}
+    </div>
+  );
+
+  if (isMobile) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100%", background: "#011627" }}>
+        <div style={{ padding: "14px 16px", color: "#FFFFFF", fontSize: "14px", fontFamily: "'Fira Code', monospace" }}>
+          _projects
+        </div>
+        <div style={{ background: "#011221", borderBottom: "1px solid #1E2D3D", flexShrink: 0 }}>
+          <button
+            onClick={() => setFilterOpen((o) => !o)}
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "#1E2D3D", border: "none", color: "#FFFFFF", cursor: "pointer", fontFamily: "'Fira Code', monospace", fontSize: "13px" }}
+          >
+            <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "9px", color: "#FFFFFF" }}>{filterOpen ? "▼" : "▶"}</span>
+              projects
+            </span>
+          </button>
+          {filterOpen && filterList}
+        </div>
+        <div style={{ padding: "14px 16px", color: "#FFFFFF", fontSize: "14px", fontFamily: "'Fira Code', monospace" }}>
+           {"// projects "}
+           <span style={{ color: "#607B96" }}>
+             / {selected.size === 0 ? "all" : Array.from(selected).join("; ")}
+           </span>
+        </div>
+        <main style={{ flex: 1, overflowY: "auto", padding: "0 16px 40px" }}>
+          {grid}
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
-      {/* ── Sidebar ──────────────────────────────────────────────── */}
-      <aside
-        style={{
-          width: "220px",
-          flexShrink: 0,
-          borderRight: "1px solid #1E2D3D",
-          background: "#011221",
-          overflowY: "auto",
-        }}
-      >
-        <div
-          style={{
-            padding: "12px 16px",
-            color: "#FFFFFF",
-            fontSize: "13px",
-            fontFamily: "'Fira Code', monospace",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            borderBottom: "1px solid #1E2D3D",
-          }}
-        >
+      <aside style={{ width: "220px", flexShrink: 0, borderRight: "1px solid #1E2D3D", background: "#011221", overflowY: "auto" }}>
+        <div style={{ padding: "12px 16px", color: "#FFFFFF", fontSize: "13px", fontFamily: "'Fira Code', monospace", display: "flex", alignItems: "center", gap: "8px", borderBottom: "1px solid #1E2D3D" }}>
           <span style={{ fontSize: "9px", color: "#607B96" }}>▼</span>
           projects
         </div>
-
-        <div style={{ padding: "8px 0" }}>
-          {FILTERS.map((f) => (
-            <label
-              key={f}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "8px 16px 8px 20px",
-                cursor: "pointer",
-                color: selected.has(f) ? "#FFFFFF" : "#607B96",
-                fontSize: "13px",
-                fontFamily: "'Fira Code', monospace",
-                transition: "color 0.15s",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={selected.has(f)}
-                onChange={() => toggleFilter(f)}
-                style={{
-                  width: "14px",
-                  height: "14px",
-                  accentColor: "#43D9AD",
-                  cursor: "pointer",
-                  flexShrink: 0,
-                }}
-              />
-              <span
-                style={{
-                  width: "20px",
-                  textAlign: "center",
-                  fontSize: "13px",
-                  color: selected.has(f) ? "#FFFFFF" : "#4D5BCE",
-                }}
-              >
-                {TECH_ICONS[f] || "◆"}
-              </span>
-              {f}
-            </label>
-          ))}
-        </div>
+        {filterList}
       </aside>
-
-      {/* ── Main area ────────────────────────────────────────────── */}
-      <main
-        style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}
-      >
-        {/* Active filter chips bar */}
-        {selected.size > 0 && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: "8px",
-              padding: "10px 28px",
-              borderBottom: "1px solid #1E2D3D",
-              flexShrink: 0,
-            }}
-          >
-            {Array.from(selected).map((f, i) => (
-              <React.Fragment key={f}>
-                {i > 0 && (
-                  <span
-                    style={{
-                      color: "#607B96",
-                      fontFamily: "'Fira Code', monospace",
-                      fontSize: "12px",
-                    }}
-                  >
-                    ;
-                  </span>
-                )}
-                <span
-                  style={{
-                    color: "#FFFFFF",
-                    fontFamily: "'Fira Code', monospace",
-                    fontSize: "12px",
-                  }}
-                >
-                  {f}
-                </span>
-              </React.Fragment>
-            ))}
-            <button
-              onClick={() => setSelected(new Set())}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#607B96",
-                cursor: "pointer",
-                fontSize: "16px",
-                lineHeight: 1,
-                padding: "0 4px",
-              }}
-            >
-              ×
-            </button>
-          </div>
-        )}
-
-        {/* Grid */}
-        <div
-          style={{
-            flex: 1,
-            padding: "28px 28px",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-            gap: "24px",
-            alignContent: "start",
-          }}
-        >
-          {filtered.length === 0 ? (
-            <div
-              style={{
-                gridColumn: "1 / -1",
-                color: "#607B96",
-                fontFamily: "'Fira Code', monospace",
-                fontSize: "13px",
-                paddingTop: "40px",
-              }}
-            >
-              {"// No projects match the selected filters"}
-            </div>
-          ) : (
-            filtered.map((project, idx) => (
-              <ProjectCard key={project._id} project={project} count={idx + 1} />
-            ))
-          )}
-        </div>
+      <main style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+        {chipsBar}
+        {grid}
       </main>
     </div>
   );
 }
 
-function ProjectCard({ project, count }: { project: Project; count: number }) {
+function ProjectCard({ project, count, techIconMap }: { project: Project; count: number; techIconMap: Record<string, string> }) {
   const tech = Array.isArray(project.techStack) ? project.techStack[0] : null;
-  const techIcon = tech ? TECH_ICONS[tech] ?? "◆" : null;
+  const techIcon = tech ? techIconMap[tech] ?? "◆" : null;
   const slug = slugify(project.title);
 
   return (
@@ -257,7 +178,6 @@ function ProjectCard({ project, count }: { project: Project; count: number }) {
         ((e.currentTarget as HTMLElement).style.borderColor = "#1E2D3D")
       }
     >
-      {/* Image */}
       <div
         style={{
           height: "150px",
@@ -274,7 +194,6 @@ function ProjectCard({ project, count }: { project: Project; count: number }) {
         {!project.imageLink && (
           <span style={{ color: "#1E2D3D", fontSize: "36px" }}>{"</>"}</span>
         )}
-        {/* Tech icon badge */}
         {techIcon && (
           <div
             style={{
@@ -298,7 +217,6 @@ function ProjectCard({ project, count }: { project: Project; count: number }) {
         )}
       </div>
 
-      {/* Body */}
       <div
         style={{
           padding: "16px",
@@ -308,7 +226,6 @@ function ProjectCard({ project, count }: { project: Project; count: number }) {
           gap: "10px",
         }}
       >
-        {/* Title line */}
         <p
           style={{
             margin: 0,
@@ -324,7 +241,6 @@ function ProjectCard({ project, count }: { project: Project; count: number }) {
           <span style={{ color: "#607B96" }}>_{slug}</span>
         </p>
 
-        {/* Description */}
         <p
           style={{
             margin: 0,
@@ -338,7 +254,6 @@ function ProjectCard({ project, count }: { project: Project; count: number }) {
           {project.des}
         </p>
 
-        {/* view-project button */}
         {project.link && (
           <a
             href={project.link}

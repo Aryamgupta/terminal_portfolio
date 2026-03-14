@@ -1,0 +1,231 @@
+{
+  "personalInfo": {
+    "id": "69b5524129196054d0576347",
+    "name": "Aryam Gupta",
+    "role": [
+      "Full Stack Developer",
+      "Competitive Programmer"
+    ],
+    "bio": [
+      "/**",
+      " * About me",
+      " *",
+      " * I am a full-stack developer with a passion for",
+      " * building beautiful and performant web apps.",
+      " * I have hands-on experience with modern JavaScript",
+      " * frameworks, RESTful APIs, and NoSQL databases.",
+      " *",
+      " * I love clean code, thoughtful architecture, and",
+      " * turning complex problems into elegant solutions.",
+      " * When I'm not coding, I'm exploring open-source,",
+      " * gaming, or learning something new.",
+      " */"
+    ],
+    "email": "aryamgupta8750@gmail.com",
+    "phone": "+91 8750XXXXXX",
+    "location": "New Delhi, India 🇮🇳",
+    "githubLink": "https://github.com/aryam-gupta",
+    "linkedinLink": "https://linkedin.com/in/aryam-gupta",
+    "twitterLink": "https://twitter.com/aryam_gupta",
+    "resumeLink": null,
+    "interests": [
+      "/**",
+      " * Interests",
+      " *",
+      " * - Full-stack web development",
+      " * - Open-source contribution",
+      " * - CLI tooling & automation",
+      " * - AI / ML integrations",
+      " * - Gaming & indie dev",
+      " */"
+    ]
+  },
+  "projects": [
+    {
+      "id": "69b5524229196054d057635e",
+      "title": "Project 1",
+      "imageLink": null,
+      "description": "A cool project description",
+      "techStack": [
+        "React",
+        "Node.js",
+        "MongoDB"
+      ],
+      "link": null,
+      "date": null,
+      "featured": true,
+      "order": 1
+    },
+    {
+      "id": "69b5524229196054d057635f",
+      "title": "Project 2",
+      "imageLink": null,
+      "description": "Another cool project",
+      "techStack": [
+        "Next.js",
+        "Tailwind"
+      ],
+      "link": null,
+      "date": null,
+      "featured": true,
+      "order": 2
+    }
+  ],
+  "education": [
+    {
+      "id": "69b5524129196054d0576348",
+      "name": "12th",
+      "institution": "Jingle Bells Public School (Bareilly)",
+      "percentage": "93.20%",
+      "year": "2019",
+      "type": "high-school"
+    },
+    {
+      "id": "69b5524129196054d0576349",
+      "name": "B.Tech (Computer Science)",
+      "institution": "JSS Academy of Technical Education (Noida)",
+      "percentage": "8.40",
+      "year": "2020-24",
+      "type": "university"
+    }
+  ],
+  "certificates": [
+    {
+      "id": "69b5524229196054d057634a",
+      "name": "Full Stack Web Development",
+      "issuer": "Coursera / Meta",
+      "link": "https://coursera.org/verify/example1",
+      "img": "https://via.placeholder.com/150",
+      "date": "2023"
+    },
+    {
+      "id": "69b5524229196054d057634b",
+      "name": "Advanced React Patterns",
+      "issuer": "Frontend Masters",
+      "link": "https://frontendmasters.com/certificates/example2",
+      "img": "https://via.placeholder.com/150",
+      "date": "2023"
+    },
+    {
+      "id": "69b5524229196054d057634c",
+      "name": "Mobile App Development",
+      "issuer": "Google",
+      "link": "https://example.com/verify/mobile",
+      "img": "https://via.placeholder.com/150",
+      "date": "2022"
+    }
+  ],
+  "skillCategories": [
+    {
+      "id": "69b5524229196054d057635a",
+      "name": "Frontend",
+      "skills": [
+        "React",
+        "Next.js",
+        "Vue",
+        "HTML",
+        "CSS",
+        "Tailwind"
+      ]
+    },
+    {
+      "id": "69b5524229196054d057635b",
+      "name": "Backend",
+      "skills": [
+        "Node.js",
+        "Express",
+        "MongoDB",
+        "SQL",
+        "REST API"
+      ]
+    },
+    {
+      "id": "69b5524229196054d057635c",
+      "name": "Languages",
+      "skills": [
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "C++"
+      ]
+    },
+    {
+      "id": "69b5524229196054d057635d",
+      "name": "Tools",
+      "skills": [
+        "Git",
+        "Docker",
+        "VS Code",
+        "Vercel"
+      ]
+    }
+  ],
+  "techIcons": [
+    {
+      "id": "69b5524229196054d057634d",
+      "name": "React",
+      "icon": "⚛"
+    },
+    {
+      "id": "69b5524229196054d057634e",
+      "name": "Next.js",
+      "icon": "△"
+    },
+    {
+      "id": "69b5524229196054d057634f",
+      "name": "Node.js",
+      "icon": "⬡"
+    },
+    {
+      "id": "69b5524229196054d0576350",
+      "name": "MongoDB",
+      "icon": "🍃"
+    },
+    {
+      "id": "69b5524229196054d0576351",
+      "name": "TypeScript",
+      "icon": "TS"
+    },
+    {
+      "id": "69b5524229196054d0576352",
+      "name": "Vue",
+      "icon": "∨"
+    },
+    {
+      "id": "69b5524229196054d0576353",
+      "name": "HTML",
+      "icon": "📄"
+    },
+    {
+      "id": "69b5524229196054d0576354",
+      "name": "CSS",
+      "icon": "🎨"
+    },
+    {
+      "id": "69b5524229196054d0576355",
+      "name": "Angular",
+      "icon": "🅐"
+    },
+    {
+      "id": "69b5524229196054d0576356",
+      "name": "Gatsby",
+      "icon": "💜"
+    },
+    {
+      "id": "69b5524229196054d0576357",
+      "name": "Flutter",
+      "icon": "🐦"
+    },
+    {
+      "id": "69b5524229196054d0576358",
+      "name": "Express",
+      "icon": "⬡"
+    },
+    {
+      "id": "69b5524229196054d0576359",
+      "name": "JavaScript",
+      "icon": "JS"
+    }
+  ],
+  "exportedAt": "2026-03-14T12:24:18.521Z"
+}

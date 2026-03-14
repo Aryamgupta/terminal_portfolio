@@ -1,16 +1,22 @@
-import React from "react";
-import PersonalInfo from "@/lib/models/PersonalInfo";
-import dbConnect from "@/lib/db";
+import fs from "fs";
+import path from "path";
 import SnakeGame from "@/components/SnakeGame";
 
-async function getPersonalInfo() {
-  await dbConnect();
-  const info = await PersonalInfo.findOne({});
-  return info?.personalInfo || "Front-end developer";
+async function getHomeData() {
+  const dataPath = path.join(process.cwd(), "public/data/portfolio-data.json");
+  const jsonData = fs.readFileSync(dataPath, "utf8");
+  const data = JSON.parse(jsonData);
+  
+  const personalInfo = data.personalInfo;
+  return {
+    name: personalInfo?.name || "Aryam Gupta",
+    role: personalInfo?.role?.[0] || "Front-end developer",
+    githubLink: personalInfo?.githubLink || "https://github.com/aryam-gupta",
+  };
 }
 
 export default async function HomePage() {
-  const info = await getPersonalInfo();
+  const { name, role, githubLink } = await getHomeData();
 
   return (
     <div
@@ -55,19 +61,7 @@ export default async function HomePage() {
       />
 
       {/* Two-column layout */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 10,
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "60px",
-          width: "100%",
-          padding: "0 60px",
-        }}
-      >
+      <div className="home-layout">
         {/* LEFT: Hero Text */}
         <div style={{ flex: "1 1 0", minWidth: 0, maxWidth: "420px" }}>
           <p
@@ -90,7 +84,7 @@ export default async function HomePage() {
               fontFamily: "'Fira Code', monospace",
             }}
           >
-            Aryam Gupta
+            {name}
           </h1>
           <h2
             style={{
@@ -104,7 +98,7 @@ export default async function HomePage() {
             }}
           >
             <span style={{ color: "#43D9AD" }}>&gt;</span>{" "}
-            <span>{info}</span>
+            <span>{role}</span>
           </h2>
 
           <div style={{ marginTop: "48px", display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -120,13 +114,13 @@ export default async function HomePage() {
               <span style={{ color: "#43D9AD" }}>githubLink</span>
               {" = "}
               <a
-                href="https://github.com/aryam-gupta"
+                href={githubLink}
                 target="_blank"
                 rel="noreferrer"
                 className="github-link"
                 style={{ color: "#E99287", textDecoration: "none" }}
               >
-                &quot;https://github.com/aryam-gupta&quot;
+                &quot;{githubLink}&quot;
               </a>
             </p>
           </div>
@@ -137,6 +131,32 @@ export default async function HomePage() {
           <SnakeGame />
         </div>
       </div>
+
+      <style>{`
+        .home-layout {
+          position: relative;
+          z-index: 10;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          gap: 60px;
+          width: 100%;
+          padding: 0 60px;
+        }
+        @media (max-width: 768px) {
+          .home-layout {
+            flex-direction: column;
+            gap: 40px;
+            padding: 40px 24px;
+            align-items: center;
+            text-align: center;
+          }
+          .home-layout > div {
+            max-width: 100% !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -1,15 +1,20 @@
-import React from "react";
-import Project from "@/lib/models/Project";
-import dbConnect from "@/lib/db";
+import fs from "fs";
+import path from "path";
 import ProjectsContent from "@/components/ProjectsContent";
 
-async function getProjects() {
-  await dbConnect();
-  const projects = await Project.find({}).sort({ _id: -1 });
-  return JSON.parse(JSON.stringify(projects));
+async function getProjectsData() {
+  const dataPath = path.join(process.cwd(), "public/data/portfolio-data.json");
+  const jsonData = fs.readFileSync(dataPath, "utf8");
+  const data = JSON.parse(jsonData);
+
+  return {
+    projects: data.projects,
+    techIcons: data.techIcons,
+    skillCategories: data.skillCategories,
+  };
 }
 
 export default async function ProjectsPage() {
-  const projects = await getProjects();
-  return <ProjectsContent projects={projects} />;
+  const data = await getProjectsData();
+  return <ProjectsContent {...data} />;
 }

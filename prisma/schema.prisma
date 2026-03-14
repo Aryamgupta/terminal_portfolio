@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_LINK")
+}
+
+model PersonalInfo {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  role         String[] // Array for multiple roles as requested
+  bio          String[] // Stored as lines for editor view
+  email        String?
+  phone        String?
+  location     String?
+  githubLink   String?
+  linkedinLink String?
+  twitterLink  String?
+  resumeLink   String?
+  interests    String[] // Stored as lines for editor view
+}
+
+model Project {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  imageLink   String?
+  description String
+  techStack   String[]
+  link        String?
+  date        String?
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+}
+
+model Education {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  institution String
+  percentage  String?
+  year        String?
+  type        String  @default("university") // high-school, university, etc.
+}
+
+model Certificate {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  issuer  String
+  link    String?
+  img     String?
+  date    String?
+}
+
+model SkillCategory {
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
+  name   String   // e.g. "Frontend", "Backend"
+  skills String[] // ["React", "Next.js", etc.]
+}
+
+model TechIcon {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String // e.g. "React"
+  icon  String // e.g. "⚛"
+}
+
+model Message {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  senderName  String
+  senderEmail String
+  message     String
+  time        DateTime @default(now())
+}

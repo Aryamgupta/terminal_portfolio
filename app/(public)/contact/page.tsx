@@ -1,10 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function ContactPage() {
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState<Record<string, boolean>>({ contacts: true, socials: false });
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+
+  const toggleSection = (k: string) => setSidebarOpen((p) => ({ ...p, [k]: !p[k] }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,12 +69,14 @@ export default function ContactPage() {
     return (
       <div
         style={{
-          height: "100%",
+          height: isMobile ? "auto" : "100%",
+          minHeight: isMobile ? "50vh" : undefined,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           gap: "20px",
+          padding: isMobile ? "40px 24px" : undefined,
         }}
       >
         <div style={{ fontSize: "72px" }}>🤘</div>
@@ -111,14 +118,7 @@ export default function ContactPage() {
             fontFamily: "'Fira Code', monospace",
             fontSize: "13px",
             cursor: "pointer",
-            transition: "border-color 0.2s",
           }}
-          onMouseOver={(e) =>
-            ((e.currentTarget as HTMLElement).style.borderColor = "#43D9AD")
-          }
-          onMouseOut={(e) =>
-            ((e.currentTarget as HTMLElement).style.borderColor = "#1E2D3D")
-          }
         >
           send-new-message
         </button>
@@ -126,6 +126,59 @@ export default function ContactPage() {
     );
   }
 
+  /* ── MOBILE layout ─────────────────────────────────────── */
+  if (isMobile) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100%", background: "#011627" }}>
+        <div style={{ padding: "14px 16px", color: "#FFFFFF", fontSize: "14px", fontFamily: "'Fira Code', monospace" }}>
+          _contact-me
+        </div>
+
+        {/* Contacts accordion */}
+        <div style={{ background: "#011221", borderBottom: "1px solid #1E2D3D" }}>
+          <button onClick={() => toggleSection("contacts")} style={{ width: "100%", display: "flex", alignItems: "center", gap: "8px", padding: "12px 16px", background: "#1E2D3D", border: "none", color: "#FFFFFF", cursor: "pointer", fontFamily: "'Fira Code', monospace", fontSize: "13px" }}>
+            <span style={{ fontSize: "9px", color: "#FFFFFF" }}>{sidebarOpen.contacts ? "▼" : "▶"}</span> contacts
+          </button>
+          {sidebarOpen.contacts && (
+            <div style={{ padding: "8px 0 12px" }}>
+              <a href="mailto:aryamgupta8750@gmail.com" style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 20px", color: "#607B96", fontSize: "12px", fontFamily: "'Fira Code', monospace", textDecoration: "none" }}>✉ aryamgupta8750@gmail.com</a>
+              <a href="tel:+918750000000" style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 20px", color: "#607B96", fontSize: "12px", fontFamily: "'Fira Code', monospace", textDecoration: "none" }}>📞 +91 8750XXXXXX</a>
+            </div>
+          )}
+          <button onClick={() => toggleSection("socials")} style={{ width: "100%", display: "flex", alignItems: "center", gap: "8px", padding: "12px 16px", background: "#1E2D3D", border: "none", borderTop: "1px solid #01080E", color: "#FFFFFF", cursor: "pointer", fontFamily: "'Fira Code', monospace", fontSize: "13px" }}>
+            <span style={{ fontSize: "9px", color: "#FFFFFF" }}>{sidebarOpen.socials ? "▼" : "▶"}</span> find-me-also-in
+          </button>
+          {sidebarOpen.socials && (
+            <div style={{ padding: "8px 0 12px" }}>
+              {socials.map((s) => (
+                <a key={s.label} href={s.href} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 20px", color: "#607B96", fontSize: "12px", fontFamily: "'Fira Code', monospace", textDecoration: "none" }}>⌥ {s.label}</a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Form Breadcrumb */}
+        <div style={{ padding: "14px 16px", color: "#FFFFFF", fontSize: "14px", fontFamily: "'Fira Code', monospace" }}>
+           {"// contact "}
+           <span style={{ color: "#607B96" }}>
+             / contact-form
+           </span>
+        </div>
+
+        {/* Form */}
+        <main style={{ flex: 1, padding: "0 16px 40px", overflowY: "auto" }}>
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div><label style={labelStyle}>_name:</label><input value={form.name} onChange={(e) => update("name", e.target.value)} style={inputStyle} placeholder="Jonathan Davis" /></div>
+            <div><label style={labelStyle}>_email:</label><input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} style={inputStyle} /></div>
+            <div><label style={labelStyle}>_message:</label><textarea value={form.message} onChange={(e) => update("message", e.target.value)} rows={6} style={{ ...inputStyle, resize: "vertical" }} /></div>
+            <button type="submit" style={{ padding: "10px 20px", background: "#1E2D3D", border: "1px solid #1E2D3D", borderRadius: "8px", color: "#FFFFFF", fontFamily: "'Fira Code', monospace", fontSize: "13px", cursor: "pointer", alignSelf: "flex-start" }}>submit-message</button>
+          </form>
+        </main>
+      </div>
+    );
+  }
+
+  /* ── DESKTOP layout ────────────────────────────────────── */
   return (
     <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
       {/* ── Left Sidebar ─────────────────────────────────────────── */}
