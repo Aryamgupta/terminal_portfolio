@@ -1,25 +1,14 @@
-import { PrismaClient } from "@prisma/client";
-import { config } from "dotenv";
+import { prisma } from "./prisma";
 import fs from "fs";
 import path from "path";
 
-// Load .env.local
-config({ path: path.join(process.cwd(), ".env.local") });
-
-async function exportData() {
-  // Fix the DATABASE_LINK to include the database name if necessary
-  let dbUrl = process.env.DATABASE_LINK || "";
-  if (dbUrl.includes(".net/?")) {
-    dbUrl = dbUrl.replace(".net/?", ".net/test?");
-  }
-
-  // Set the variable explicitly
-  process.env.DATABASE_LINK = dbUrl;
-
-  const prisma = new PrismaClient();
-
+/**
+ * Generates the portfolio-data.json file based on current database content.
+ * This is now triggered on-demand from the admin panel.
+ */
+export async function generatePortfolioJson() {
   try {
-    console.log("Fetching portfolio data from MongoDB...");
+    console.log("Fetching portfolio data from database...");
 
     const [
       personalInfo,
@@ -56,12 +45,9 @@ async function exportData() {
     fs.writeFileSync(filePath, JSON.stringify(portfolioData, null, 2));
 
     console.log(`Successfully exported data to ${filePath}`);
+    return { success: true, path: filePath, exportedAt: portfolioData.exportedAt };
   } catch (error) {
     console.error("Error exporting data:", error);
-    process.exit(1);
-  } finally {
-    await prisma.$disconnect();
+    throw error;
   }
 }
-
-exportData();

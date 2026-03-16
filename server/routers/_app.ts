@@ -9,6 +9,7 @@ import { techIconRouter } from "./techIcon";
 import { analyticsRouter } from "./analytics";
 import { authRouter } from "./auth";
 import { messageRouter } from "./message";
+import { systemRouter } from "./system";
 
 export const appRouter = router({
   project: projectRouter,
@@ -21,6 +22,7 @@ export const appRouter = router({
   analytics: analyticsRouter,
   auth: authRouter,
   message: messageRouter,
+  system: systemRouter,
 });
 
 export type AppRouter = typeof appRouter;
