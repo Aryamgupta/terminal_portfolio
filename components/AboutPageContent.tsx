@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, lazy, Suspense } from "react";
+import React, { useState, lazy, Suspense, useMemo } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 const GitHubPanel = lazy(() => import("./GitHubPanel"));
@@ -173,24 +173,25 @@ export default function AboutPageContent({
         <>
           <FileRow id="bio" label="bio" indent={3} {...sharedRowProps} />
           <FileRow id="interests" label="interests" indent={3} {...sharedRowProps} />
-          
-          <FolderRow id="education" label="education" openFolders={openFolders} onToggle={toggleFolder} indent={3} />
-          {openFolders["education"] && (
-            <>
-              {education.map((edu, idx) => (
-                <FileRow key={`edu-${idx}`} id={`edu-${idx}`} label={edu.name.toLowerCase().replace(/\s+/g, "-")} indent={4} {...sharedRowProps} />
-              ))}
-            </>
-          )}
+        </>
+      )}
 
-          <FolderRow id="certificates" label="certificates" openFolders={openFolders} onToggle={toggleFolder} indent={3} />
-          {openFolders["certificates"] && (
-            <>
-              {certificates.map((cert) => (
-                <FileRow key={cert.id} id={`cert-${cert.id}`} label={cert.name.toLowerCase().replace(/\s+/g, "-")} indent={4} {...sharedRowProps} />
-              ))}
-            </>
-          )}
+      {/* Moved Education and Certificates to root */}
+      <FolderRow id="education" label="education" openFolders={openFolders} onToggle={toggleFolder} indent={2} />
+      {openFolders["education"] && (
+        <>
+          {education.map((edu, idx) => (
+            <FileRow key={`edu-${idx}`} id={`edu-${idx}`} label={edu.name.toLowerCase().replace(/\s+/g, "-")} indent={3} {...sharedRowProps} />
+          ))}
+        </>
+      )}
+
+      <FolderRow id="certificates" label="certificates" openFolders={openFolders} onToggle={toggleFolder} indent={2} />
+      {openFolders["certificates"] && (
+        <>
+          {certificates.map((cert) => (
+            <FileRow key={cert.id} id={`cert-${cert.id}`} label={cert.name.toLowerCase().replace(/\s+/g, "-")} indent={3} {...sharedRowProps} />
+          ))}
         </>
       )}
       
@@ -300,40 +301,105 @@ export default function AboutPageContent({
     </main>
   );
 
-  // ── Construct Dynamic Terminal Cards ────────────────────────────
-  const terminalCards = [
-    {
-      id: "whoami",
-      title: "whoami.sh",
-      lines: [
-        { prompt: "$", cmd: " whoami", color: "#43D9AD" },
-        { prompt: ">", cmd: ` ${personalInfo?.name || "Aryam Gupta"}`, color: "#FFFFFF" },
-        { prompt: "$", cmd: " cat role.txt", color: "#43D9AD" },
-        { prompt: ">", cmd: ` ${personalInfo?.role?.[0] || "Full Stack Developer"}`, color: "#FFFFFF" },
-        { prompt: "$", cmd: " echo $LOCATION", color: "#43D9AD" },
-        { prompt: ">", cmd: ` ${personalInfo?.location || "New Delhi, India 🇮🇳"}`, color: "#FFFFFF" },
-      ],
-    },
-    {
-      id: "skills",
-      title: "ls-skills.sh",
-      lines: [
-        { prompt: "$", cmd: " ls skills/", color: "#43D9AD" },
-        { 
-          prompt: ">", 
-          cmd: ` ${skillCategories?.[0]?.skills.slice(0, 3).map(s => s.toLowerCase() + '/').join(' ') || "react/ next.js/ node.js/"}`, 
-          color: "#4D5BCE" 
-        },
-        { 
-          prompt: " ", 
-          cmd: `  ${skillCategories?.[0]?.skills.slice(3, 6).map(s => s.toLowerCase() + '/').join(' ') || "mongodb/ express/ typescript/"}`, 
-          color: "#4D5BCE" 
-        },
-        { prompt: "$", cmd: " ls currently-learning/", color: "#43D9AD" },
-        { prompt: ">", cmd: " tRPC/ Prisma/", color: "#FEA55F" },
-      ],
-    },
-  ];
+  // ── Context-Aware Terminal Cards ────────────────────────────────
+  const terminalCards = useMemo(() => {
+    if (activeTab === "github-activity") {
+      return [
+        {
+          id: "git-fetch",
+          title: "git-fetch.sh",
+          lines: [
+            { prompt: "$", cmd: " git remote update", color: "#43D9AD" },
+            { prompt: ">", cmd: " fetching latest activity...", color: "#607B96" },
+            { prompt: "$", cmd: " git log --oneline -n 5", color: "#43D9AD" },
+            { prompt: ">", cmd: " dc26e12 build: add frontend project...", color: "#FFFFFF" },
+            { prompt: ">", cmd: " a3b8d1b refactor: use prisma models...", color: "#FFFFFF" },
+          ],
+        }
+      ];
+    }
+
+    if (activeTab.startsWith("edu-")) {
+      const idx = parseInt(activeTab.split("-")[1]);
+      const edu = education[idx];
+      return [
+        {
+          id: "ls-edu",
+          title: "ls-education.sh",
+          lines: [
+            { prompt: "$", cmd: " ls education/degrees", color: "#43D9AD" },
+            { prompt: ">", cmd: ` ${edu?.name.toLowerCase().replace(/\s+/g, "_")}.pdf`, color: "#4D5BCE" },
+            { prompt: "$", cmd: " cat institution.txt", color: "#43D9AD" },
+            { prompt: ">", cmd: ` ${edu?.institution}`, color: "#FFFFFF" },
+          ],
+        }
+      ];
+    }
+
+    if (activeTab.startsWith("cert-")) {
+      const id = activeTab.split("-")[1];
+      const cert = certificates.find(c => c.id === id);
+      return [
+        {
+          id: "verify-cert",
+          title: "verify-cert.sh",
+          lines: [
+            { prompt: "$", cmd: " check-validity credential.json", color: "#43D9AD" },
+            { prompt: ">", cmd: " Status: VALID", color: "#27C840" },
+            { prompt: "$", cmd: " cat issuer.txt", color: "#43D9AD" },
+            { prompt: ">", cmd: ` ${cert?.issuer || "Verified Issuer"}`, color: "#FFFFFF" },
+          ],
+        }
+      ];
+    }
+
+    if (["email", "phone", "location"].includes(activeTab)) {
+      return [
+        {
+          id: "ping-net",
+          title: "ping-connectivity.sh",
+          lines: [
+            { prompt: "$", cmd: ` ping ${activeTab}.server`, color: "#43D9AD" },
+            { prompt: ">", cmd: ` 64 bytes from ${activeTab}: icmp_seq=1 ttl=56`, color: "#607B96" },
+            { prompt: ">", cmd: " connection stable.", color: "#27C840" },
+          ],
+        }
+      ];
+    }
+
+    // Default: Identity / Info
+    return [
+      {
+        id: "whoami",
+        title: "whoami.sh",
+        lines: [
+          { prompt: "$", cmd: " whoami", color: "#43D9AD" },
+          { prompt: ">", cmd: ` ${personalInfo?.name || "Aryam Gupta"}`, color: "#FFFFFF" },
+          { prompt: "$", cmd: " cat role.txt", color: "#43D9AD" },
+          { prompt: ">", cmd: ` ${personalInfo?.role?.[0] || "Full Stack Developer"}`, color: "#FFFFFF" },
+          { prompt: "$", cmd: " echo $LOCATION", color: "#43D9AD" },
+          { prompt: ">", cmd: ` ${personalInfo?.location || "New Delhi, India 🇮🇳"}`, color: "#FFFFFF" },
+        ],
+      },
+      {
+        id: "skills",
+        title: "ls-skills.sh",
+        lines: [
+          { prompt: "$", cmd: " ls skills/", color: "#43D9AD" },
+          { 
+            prompt: ">", 
+            cmd: ` ${skillCategories?.[0]?.skills.slice(0, 3).map(s => s.toLowerCase() + '/').join(' ') || "react/ next.js/ node.js/"}`, 
+            color: "#4D5BCE" 
+          },
+          { 
+            prompt: " ", 
+            cmd: `  ${skillCategories?.[1]?.skills.slice(0, 3).map(s => s.toLowerCase() + '/').join(' ') || "mongodb/ express/ typescript/"}`, 
+            color: "#4D5BCE" 
+          },
+        ],
+      },
+    ];
+  }, [activeTab, personalInfo, education, certificates, skillCategories]);
 
   const rightPanel = (
     <aside style={{ width: "320px", borderLeft: "1px solid #1E2D3D", overflowY: "auto", background: "#011627", display: isMobile ? "none" : "block", flexShrink: 0 }}>
