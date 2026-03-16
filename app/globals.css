@@ -80,4 +80,19 @@ html, body {
     height: auto;
     min-height: 100%;
   }
+  .sidebar-overlay{
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  .sidebar-title{
+    display: flex;
+  }
+}
+
+@media (max-width: 1024px) {
+  .sidebar-user{
+    display: flex;
+  }
 }

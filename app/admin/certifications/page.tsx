@@ -128,7 +128,7 @@ export default function CertificationsAdminPage() {
             marginTop: '12px',
             margin: '12px 0 0 0'
           }}>
-            // manage your verified achievements
+           {"// manage your verified achievements"}
           </p>
         </div>
 
