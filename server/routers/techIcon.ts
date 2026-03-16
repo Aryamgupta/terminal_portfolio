@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, publicProcedure } from "../trpc";
+import { router, protectedProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 
 const TechIconSchema = z.object({
@@ -15,11 +15,11 @@ const ConversionSchema = z.object({
 });
 
 export const techIconRouter = router({
-  getAll: publicProcedure.query(async () => {
+  getAll: protectedProcedure.query(async () => {
     return await prisma.techIcon.findMany();
   }),
 
-  upsert: publicProcedure
+  upsert: protectedProcedure
     .input(TechIconSchema)
     .mutation(async ({ input }) => {
       const { id, ...data } = input;
@@ -35,7 +35,7 @@ export const techIconRouter = router({
       }
     }),
 
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.string())
     .mutation(async ({ input }) => {
       return await prisma.techIcon.delete({
@@ -43,7 +43,7 @@ export const techIconRouter = router({
       });
     }),
 
-  convertAndSave: publicProcedure
+  convertAndSave: protectedProcedure
     .input(ConversionSchema)
     .mutation(async ({ input }) => {
       try {

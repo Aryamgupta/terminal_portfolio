@@ -7,10 +7,12 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 1 day (Refresh Token lifetime)
   },
   pages: {
     signIn: "/admin/login",
   },
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       name: "OTP",
@@ -63,15 +65,26 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        // Since we verify OTP during authorize, the user is already 2FA verified
         token.isTwoFactorVerified = true;
+        // Set initial access token expiry (30 minutes)p
+        token.accessTokenExpires = Date.now() + 30 * 60 * 1000;
       }
+
+      // If the access token has expired, but the refresh window (session maxAge) is still valid,
+      // NextAuth's session handling will naturally allow us to rotate it if we want,
+      // but here we simply ensure the token carries the expiry for tRPC to check.
+      
+      // If we are within the 1-day refresh window, we can allow tRPC to proceed if we "refresh" it.
+      // However, to follow the pattern strictly: tRPC will check the token.
+      // If tRPC sees it's expired, it will error. The client then needs to refresh the session.
+      
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
-        session.user.isTwoFactorVerified = true; // Always verified for OTP-only flow
+        session.user.isTwoFactorVerified = true;
+        session.user.accessTokenExpires = token.accessTokenExpires as number;
       }
       return session;
     },

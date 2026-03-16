@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, publicProcedure } from "../trpc";
+import { router, publicProcedure, protectedProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 
 const CertificationSchema = z.object({
@@ -12,13 +12,13 @@ const CertificationSchema = z.object({
 });
 
 export const certificationRouter = router({
-  getAll: publicProcedure.query(async () => {
+  getAll: protectedProcedure.query(async () => {
     return await prisma.certificate.findMany({
       orderBy: { date: "desc" },
     });
   }),
   
-  upsert: publicProcedure
+  upsert: protectedProcedure
     .input(CertificationSchema)
     .mutation(async ({ input }) => {
       const { id, ...data } = input;
@@ -35,7 +35,7 @@ export const certificationRouter = router({
       }
     }),
     
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.string())
     .mutation(async ({ input }) => {
       return await prisma.certificate.delete({

@@ -1,9 +1,9 @@
-import { router, publicProcedure } from "../trpc";
+import { router, protectedProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { execSync } from "child_process";
 
 export const analyticsRouter = router({
-  getStats: publicProcedure.query(async () => {
+  getStats: protectedProcedure.query(async () => {
     try {
       const [
         totalProjects,

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, publicProcedure } from "../trpc";
+import { router, publicProcedure, protectedProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 
 const PersonalInfoSchema = z.object({
@@ -20,7 +20,7 @@ export const personalInfoRouter = router({
   get: publicProcedure.query(async () => {
     return await prisma.personalInfo.findFirst();
   }),
-  update: publicProcedure
+  update: protectedProcedure
     .input(PersonalInfoSchema)
     .mutation(async ({ input }) => {
       const existing = await prisma.personalInfo.findFirst();

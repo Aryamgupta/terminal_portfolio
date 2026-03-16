@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, publicProcedure } from "../trpc";
+import { router, protectedProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 
 const ProjectSchema = z.object({
@@ -15,13 +15,13 @@ const ProjectSchema = z.object({
 });
 
 export const projectRouter = router({
-  getAll: publicProcedure.query(async () => {
+  getAll: protectedProcedure.query(async () => {
     return await prisma.project.findMany({
       orderBy: { order: "asc" },
     });
   }),
   
-  upsert: publicProcedure
+  upsert: protectedProcedure
     .input(ProjectSchema)
     .mutation(async ({ input }) => {
       const { id, ...data } = input;
@@ -38,7 +38,7 @@ export const projectRouter = router({
       }
     }),
     
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.string())
     .mutation(async ({ input }) => {
       return await prisma.project.delete({

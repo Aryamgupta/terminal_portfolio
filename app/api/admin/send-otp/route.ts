@@ -17,6 +17,9 @@ export async function POST(req: Request) {
     }
 
     const otp = crypto.randomInt(100000, 999999).toString();
+    console.log("-----------------------------------------");
+    console.log("[DEBUG] GENERATED OTP:", otp);
+    console.log("-----------------------------------------");
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     console.log({ otpExpires });

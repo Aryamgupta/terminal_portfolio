@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, publicProcedure } from "../trpc";
+import { router, protectedProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 
 const SkillCategorySchema = z.object({
@@ -9,11 +9,11 @@ const SkillCategorySchema = z.object({
 });
 
 export const skillCategoryRouter = router({
-  getAll: publicProcedure.query(async () => {
+  getAll: protectedProcedure.query(async () => {
     return await prisma.skillCategory.findMany();
   }),
   
-  upsert: publicProcedure
+  upsert: protectedProcedure
     .input(SkillCategorySchema)
     .mutation(async ({ input }) => {
       const { id, ...data } = input;
@@ -30,7 +30,7 @@ export const skillCategoryRouter = router({
       }
     }),
     
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.string())
     .mutation(async ({ input }) => {
       return await prisma.skillCategory.delete({
