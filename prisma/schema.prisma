@@ -69,6 +69,7 @@ model Message {
   senderName  String
   senderEmail String
   message     String
+  read        Boolean  @default(false)
   time        DateTime @default(now())
 }
 

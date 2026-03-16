@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useSession, signIn } from "next-auth/react";
+import React, { useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
   ShieldAlert,
@@ -14,22 +14,12 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 const Verify2FAPage = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const router = useRouter();
-
-  // useEffect(() => {
-  //   if (status === "unauthenticated") {
-  //     router.push("/admin/login");
-  //   } else if (status === "authenticated" && session?.user?.isTwoFactorVerified) {
-  //     router.push("/admin/dashboard");
-  //   } else if (status === "authenticated") {
-  //     handleSendOTP();
-  //   }
-  // }, [status, session, router]);
 
   const handleSendOTP = async () => {
     setSending(true);
@@ -75,60 +65,59 @@ const Verify2FAPage = () => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#01080E] overflow-hidden">
-      {/* Background Decorative Elements */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#FEA55F] rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#43D9AD] rounded-full blur-[120px]" />
-        <div className="h-full w-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
+    <div className="w-full h-full fixed inset-0 flex items-center justify-center bg-[#01080E] overflow-hidden font-['Inter',_sans-serif]">
+      {/* Dynamic Background Mesh */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-[#43D9AD]/10 rounded-full blur-[160px] animate-pulse" />
+        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#FEA55F]/10 rounded-full blur-[160px] animate-pulse [animation-delay:2s]" />
       </div>
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="relative w-full max-w-[450px] z-10"
+        initial={{ opacity: 0, scale: 0.98, y: 30 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="relative w-full max-w-[480px] z-10 px-6"
       >
-        <div className="bg-[#011221]/80 backdrop-blur-xl border border-[#1E2D3D] rounded-3xl p-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden text-center">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#43D9AD] to-transparent opacity-50" />
+        <div className="glass-panel rounded-[2rem] p-12 md:p-16 relative overflow-hidden text-center">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#43D9AD]/40 to-transparent" />
 
-          <div className="space-y-4 relative">
+          <div className="space-y-6 relative flex flex-col items-center">
             <motion.div
               initial={{ rotateY: 180 }}
               animate={{ rotateY: 0 }}
               transition={{ duration: 0.8, type: "spring" }}
-              className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-[#FEA55F]/10 text-[#FEA55F] mb-6 border border-[#FEA55F]/20 shadow-[0_0_30px_rgba(254,165,95,0.1)]"
+              className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-[#FEA55F]/10 text-[#FEA55F] mb-4 glass-border shadow-glow-premium"
             >
-              <ShieldAlert size={48} />
+              <ShieldAlert size={44} />
             </motion.div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">
-              Security Protocol
+            <h1 className="text-4xl font-['Outfit',_sans-serif] font-extrabold text-white tracking-tight">
+              Security <span className="text-[#43D9AD]">Protocol</span>
             </h1>
-            <p className="text-[#607B96] text-sm leading-relaxed px-4">
-              A temporary access key has been dispatched to <br />
-              <span className="text-white font-mono text-xs bg-white/5 px-2 py-1 rounded inline-block mt-1">
-                {session?.user?.email}
+            <p className="text-[#607B96] text-sm leading-relaxed px-4 max-w-[320px] mx-auto font-medium">
+              A temporary access key has been dispatched to your terminal at <br />
+              <span className="text-[#43D9AD] font-mono text-xs bg-[#43D9AD]/10 px-3 py-1.5 rounded-lg inline-block mt-3 border border-[#43D9AD]/20">
+                {session?.user?.email || "aryamgupta4@gmail.com"}
               </span>
             </p>
           </div>
 
-          <form onSubmit={handleVerify} className="mt-10 space-y-6">
-            <div className="space-y-4">
-              <label className="text-[10px] font-mono text-[#607B96] uppercase tracking-[0.2em]">
-                _enter_6_digit_key
+          <form onSubmit={handleVerify} className="mt-12 space-y-10">
+            <div className="space-y-6">
+              <label className="text-[10px] font-mono text-[#607B96] uppercase tracking-[0.4em] block">
+                _enter_auth_sequence
               </label>
               <div className="relative group">
                 <input
                   type="text"
                   required
                   maxLength={6}
-                  className="w-full bg-[#010C15] border border-[#1E2D3D] rounded-2xl px-4 py-5 text-white text-center text-4xl tracking-[0.5em] outline-none focus:border-[#FEA55F] transition-all font-mono shadow-inner group-hover:border-[#1E2D3D]/80"
+                  className="w-full bg-black/40 border border-white/5 rounded-2xl px-4 py-8 text-[#FEA55F] text-center text-5xl tracking-[0.6em] outline-none focus:border-[#FEA55F]/50 transition-all font-mono shadow-inner group-hover:border-white/10 caret-[#FEA55F] text-glow"
                   placeholder="000000"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
                   autoFocus
                 />
-                <div className="absolute inset-0 rounded-2xl border border-white/5 pointer-events-none" />
+                <div className="absolute inset-0 rounded-2xl border border-[#FEA55F]/5 pointer-events-none group-hover:border-[#FEA55F]/10 transition-colors" />
               </div>
 
               <AnimatePresence>
@@ -136,11 +125,11 @@ const Verify2FAPage = () => {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 flex items-center gap-3 text-red-400 text-xs font-mono"
+                    exit={{ opacity: 0, y: -10 }}
+                    className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-4 text-red-400 text-xs font-mono"
                   >
-                    <Cpu size={14} className="animate-pulse" />
-                    {error}
+                    <Cpu size={16} className="animate-pulse flex-shrink-0" />
+                    <span>{error}</span>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -149,18 +138,21 @@ const Verify2FAPage = () => {
             <button
               type="submit"
               disabled={loading || otp.length !== 6}
-              className="w-full relative overflow-hidden group py-4 px-6 bg-[#FEA55F] text-[#011627] font-bold rounded-xl transition-all active:scale-95 disabled:opacity-50 shadow-glow-sm"
+              className="w-full relative overflow-hidden group py-5 px-8 bg-[#43D9AD] text-[#011627] font-bold rounded-2xl transition-all active:scale-[0.98] disabled:opacity-50 shadow-[0_0_20px_rgba(67,217,173,0.15)]"
             >
-              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
               <div className="relative flex items-center justify-center gap-3">
                 {loading ? (
-                  <Loader2 className="animate-spin" size={20} />
+                  <>
+                    <Loader2 className="animate-spin" size={22} />
+                    <span className="tracking-[0.1em] uppercase text-sm font-extrabold">Verifying...</span>
+                  </>
                 ) : (
                   <>
-                    <span className="tracking-widest">VALIDATE ACCESS</span>
+                    <span className="tracking-[0.1em] text-sm font-extrabold uppercase">Validate Access</span>
                     <ArrowRight
-                      size={20}
-                      className="group-hover:translate-x-1 transition-transform"
+                      size={22}
+                      className="group-hover:translate-x-2 transition-transform duration-300"
                     />
                   </>
                 )}
@@ -168,23 +160,24 @@ const Verify2FAPage = () => {
             </button>
           </form>
 
-          <div className="mt-8 space-y-6">
+          <footer className="mt-12 space-y-8">
             <button
               onClick={handleSendOTP}
               disabled={sending}
-              className="text-[#607B96] text-[10px] font-mono uppercase tracking-widest hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto disabled:opacity-50"
+              className="text-[#607B96] text-[10px] font-mono uppercase tracking-[0.3em] hover:text-[#FEA55F] transition-colors flex items-center justify-center gap-3 mx-auto disabled:opacity-50 group"
             >
-              <RefreshCw size={14} className={sending ? "animate-spin" : ""} />
-              Request New Key
+              <div className="p-2 rounded-lg bg-white/5 group-hover:bg-[#FEA55F]/10 transition-colors">
+                <RefreshCw size={14} className={sending ? "animate-spin" : ""} />
+              </div>
+              Request New Sequence
             </button>
 
-            <div className="pt-6 border-t border-[#1E2D3D]/50">
-              <div className="flex items-center justify-center gap-2 text-[#607B96] text-[9px] font-mono tracking-[0.2em] uppercase opacity-50">
-                <Mail size={12} className="opacity-70" /> Encryption: AES-256
-                Enabled
+            <div className="pt-8 border-t border-white/5">
+              <div className="flex items-center justify-center gap-3 text-[#607B96]/40 text-[9px] font-mono tracking-[0.2em] uppercase">
+                <Mail size={12} className="opacity-70" /> Encryption: TLS_AES_GCM_256
               </div>
             </div>
-          </div>
+          </footer>
         </div>
       </motion.div>
     </div>

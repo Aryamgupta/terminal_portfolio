@@ -1,8 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@source "../../app/**/*.{js,ts,jsx,tsx}";
+@source "../../components/**/*.{js,ts,jsx,tsx}";
+@source "../../lib/**/*.{js,ts,jsx,tsx}";
 
 :root {
   --bg-main: #01080E;
@@ -43,6 +47,31 @@ html, body {
 ::-webkit-scrollbar-thumb:hover { background: #2B3D4F; }
 
 .github-link:hover { text-decoration: underline; }
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: rgba(1, 18, 33, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.glass-border {
+  border: 1px solid rgba(254, 165, 95, 0.2);
+  box-shadow: 0 0 15px rgba(254, 165, 95, 0.1);
+}
+
+.text-glow {
+  text-shadow: 0 0 10px rgba(254, 165, 95, 0.5),
+               0 0 20px rgba(254, 165, 95, 0.2);
+}
+
+.shadow-glow-premium {
+  box-shadow: 0 0 20px rgba(254, 165, 95, 0.15),
+              0 0 40px rgba(254, 165, 95, 0.05);
+}
 
 /* ── Mobile overrides ──────────────────────────────────────────── */
 @media (max-width: 768px) {

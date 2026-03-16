@@ -1,26 +1,39 @@
 import { z } from "zod";
 import { router, publicProcedure } from "../trpc";
-import PersonalInfo from "@/lib/models/PersonalInfo";
-import dbConnect from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 const PersonalInfoSchema = z.object({
-  personalInfo: z.string(),
+  name: z.string(),
+  role: z.array(z.string()),
+  bio: z.array(z.string()),
+  email: z.string().email().optional().nullable(),
+  phone: z.string().optional().nullable(),
+  location: z.string().optional().nullable(),
+  githubLink: z.string().optional().nullable(),
+  linkedinLink: z.string().optional().nullable(),
+  twitterLink: z.string().optional().nullable(),
+  resumeLink: z.string().optional().nullable(),
+  interests: z.array(z.string()),
 });
 
 export const personalInfoRouter = router({
   get: publicProcedure.query(async () => {
-    await dbConnect();
-    const info = await PersonalInfo.findOne({});
-    return info;
+    return await prisma.personalInfo.findFirst();
   }),
   update: publicProcedure
     .input(PersonalInfoSchema)
     .mutation(async ({ input }) => {
-      await dbConnect();
-      const info = await PersonalInfo.findOneAndUpdate({}, input, {
-        new: true,
-        upsert: true,
-      });
-      return info;
+      const existing = await prisma.personalInfo.findFirst();
+
+      if (existing) {
+        return await prisma.personalInfo.update({
+          where: { id: existing.id },
+          data: input,
+        });
+      } else {
+        return await prisma.personalInfo.create({
+          data: input,
+        });
+      }
     }),
 });

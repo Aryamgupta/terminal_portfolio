@@ -31,3 +31,31 @@ export async function sendOTP(email: string, otp: string) {
 
   return transporter.sendMail(mailOptions);
 }
+
+export async function sendInquiryEmail(name: string, email: string, message: string) {
+  const mailOptions = {
+    from: `"Portfolio Inquiry" <${process.env.EMAIL_FROM}>`,
+    to: process.env.EMAIL_SERVER_USER, // Send to site owner
+    subject: `New Inquiry from ${name}`,
+    text: `You have a new message from ${name} (${email}):\n\n${message}`,
+    html: `
+      <div style="font-family: sans-serif; padding: 20px; background-color: #f4f4f4;">
+        <div style="max-width: 600px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
+          <h2 style="color: #333; border-bottom: 2px solid #FEA55F; padding-bottom: 10px;">New Portfolio Inquiry</h2>
+          <div style="margin-top: 20px;">
+            <p><strong>From:</strong> ${name} (<a href="mailto:${email}">${email}</a>)</p>
+            <p><strong>Message:</strong></p>
+            <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; font-style: italic; color: #555;">
+              ${message.replace(/\n/g, '<br/>')}
+            </div>
+          </div>
+          <p style="color: #999; font-size: 12px; margin-top: 30px; border-top: 1px solid #eee; pt: 10px;">
+            This inquiry was submitted via your portfolio contact form.
+          </p>
+        </div>
+      </div>
+    `,
+  };
+
+  return transporter.sendMail(mailOptions);
+}

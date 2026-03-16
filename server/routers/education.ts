@@ -2,37 +2,34 @@ import { z } from "zod";
 import { router, publicProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 
-const ProjectSchema = z.object({
+const EducationSchema = z.object({
   id: z.string().optional(),
-  title: z.string(),
-  imageLink: z.string().optional().nullable(),
-  description: z.string(),
-  techStack: z.array(z.string()),
-  link: z.string().optional().nullable(),
-  date: z.string().optional().nullable(),
-  featured: z.boolean().default(false),
-  order: z.number().default(0),
+  name: z.string(),
+  institution: z.string(),
+  percentage: z.string().optional().nullable(),
+  year: z.string().optional().nullable(),
+  type: z.string().default("university"),
 });
 
-export const projectRouter = router({
+export const educationRouter = router({
   getAll: publicProcedure.query(async () => {
-    return await prisma.project.findMany({
-      orderBy: { order: "asc" },
+    return await prisma.education.findMany({
+      orderBy: { year: "desc" },
     });
   }),
   
   upsert: publicProcedure
-    .input(ProjectSchema)
+    .input(EducationSchema)
     .mutation(async ({ input }) => {
       const { id, ...data } = input;
       
       if (id) {
-        return await prisma.project.update({
+        return await prisma.education.update({
           where: { id },
           data,
         });
       } else {
-        return await prisma.project.create({
+        return await prisma.education.create({
           data,
         });
       }
@@ -41,7 +38,7 @@ export const projectRouter = router({
   delete: publicProcedure
     .input(z.string())
     .mutation(async ({ input }) => {
-      return await prisma.project.delete({
+      return await prisma.education.delete({
         where: { id: input },
       });
     }),

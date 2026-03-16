@@ -2,18 +2,28 @@
 
 import React, { useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { trpc } from "@/utils/trpc";
 
 export default function ContactPage() {
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState<Record<string, boolean>>({ contacts: true, socials: false });
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const sendMutation = trpc.message.send.useMutation({
+    onSuccess: () => {
+      setSubmitted(true);
+    },
+  });
 
   const toggleSection = (k: string) => setSidebarOpen((p) => ({ ...p, [k]: !p[k] }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    sendMutation.mutate({
+      name: form.name,
+      email: form.email,
+      message: form.message,
+    });
   };
 
   const update = (field: keyof typeof form, val: string) =>
@@ -409,30 +419,32 @@ export default function ContactPage() {
 
             <button
               type="submit"
+              disabled={sendMutation.isPending}
               style={{
                 alignSelf: "flex-start",
                 padding: "8px 18px",
                 background: "transparent",
-                border: "1px solid #1E2D3D",
+                border: `1px solid ${sendMutation.isPending ? "#2B3D4F" : "#1E2D3D"}`,
                 borderRadius: "6px",
-                color: "#FFFFFF",
+                color: sendMutation.isPending ? "#607B96" : "#FFFFFF",
                 fontFamily: "'Fira Code', monospace",
                 fontSize: "13px",
-                cursor: "pointer",
+                cursor: sendMutation.isPending ? "not-allowed" : "pointer",
                 transition: "border-color 0.2s, color 0.2s",
               }}
               onMouseOver={(e) => {
+                if (sendMutation.isPending) return;
                 const el = e.currentTarget as HTMLElement;
                 el.style.borderColor = "#43D9AD";
                 el.style.color = "#43D9AD";
               }}
               onMouseOut={(e) => {
                 const el = e.currentTarget as HTMLElement;
-                el.style.borderColor = "#1E2D3D";
-                el.style.color = "#FFFFFF";
+                el.style.borderColor = sendMutation.isPending ? "#2B3D4F" : "#1E2D3D";
+                el.style.color = sendMutation.isPending ? "#607B96" : "#FFFFFF";
               }}
             >
-              submit-message
+              {sendMutation.isPending ? "sending..." : "submit-message"}
             </button>
           </form>
         </div>
