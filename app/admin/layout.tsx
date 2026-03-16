@@ -39,7 +39,7 @@ const SidebarContent = ({
 }: {
   isSidebarOpen: boolean;
   pathname: string;
-  router: any;
+  router: ReturnType<typeof useRouter>;
   sidebarLinks: SidebarLink[];
   setIsSidebarOpen: (open: boolean) => void;
 }) => {

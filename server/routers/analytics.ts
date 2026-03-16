@@ -1,6 +1,7 @@
 import { router, protectedProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { execSync } from "child_process";
+import { TechIcon } from "@prisma/client";
 
 export const analyticsRouter = router({
   getStats: protectedProcedure.query(async () => {
@@ -35,7 +36,7 @@ export const analyticsRouter = router({
       }
 
       // Get icons for latest project tech stack
-      let latestTechIcons: any[] = [];
+      let latestTechIcons: TechIcon[] = [];
       if (latestProject?.techStack) {
         latestTechIcons = await prisma.techIcon.findMany({
           where: {

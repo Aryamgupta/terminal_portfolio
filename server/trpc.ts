@@ -1,9 +1,9 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { ZodError } from "zod";
-import { getServerSession } from "next-auth";
+import { getServerSession, Session } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export const t = initTRPC.context<{ session: any | null }>().create({
+export const t = initTRPC.context<{ session: Session | null }>().create({
   errorFormatter({ shape, error }) {
     return {
       ...shape,

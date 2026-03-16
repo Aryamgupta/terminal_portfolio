@@ -11,16 +11,16 @@ import type { TRPCClientErrorLike } from "@trpc/client";
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
     queryCache: new QueryCache({
-      onError: (err) => {
-        const error = err as unknown as TRPCClientErrorLike<AppRouter>;
+      onError: (err: unknown) => {
+        const error = err as TRPCClientErrorLike<AppRouter>;
         if (error?.data?.code === "UNAUTHORIZED" || error?.shape?.message?.includes("expired")) {
           signOut({ callbackUrl: "/admin/login" });
         }
       }
     }),
     mutationCache: new MutationCache({
-      onError: (err) => {
-        const error = err as unknown as TRPCClientErrorLike<AppRouter>;
+      onError: (err: unknown) => {
+        const error = err as TRPCClientErrorLike<AppRouter>;
         if (error?.data?.code === "UNAUTHORIZED" || error?.shape?.message?.includes("expired")) {
           signOut({ callbackUrl: "/admin/login" });
         }

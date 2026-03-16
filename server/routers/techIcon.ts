@@ -47,13 +47,13 @@ export const techIconRouter = router({
     .input(ConversionSchema)
     .mutation(async ({ input }) => {
       try {
-        const Jimp = require("jimp");
-        const { Potrace } = require("potrace");
-        // We'll mimic the internal Bitmap initialization to bypass loadImage
-        const Bitmap = require("potrace/lib/types/Bitmap");
-        const potraceUtils = require("potrace/lib/utils");
+        const { default: Jimp } = await import("jimp");
+        const { Potrace } = await import("potrace");
+        // Use type-safe dynamic imports
+        const Bitmap = (await import("potrace/lib/types/Bitmap" as string)).default;
+        const potraceUtils = (await import("potrace/lib/utils" as string)).default;
 
-        const JimpConstructor = Jimp.default || Jimp;
+        const JimpConstructor = Jimp;
         const base64Data = input.imageBase64.split(",")[1] || input.imageBase64;
         const buffer = Buffer.from(base64Data, "base64");
 
@@ -81,8 +81,8 @@ export const techIconRouter = router({
         });
 
         // Manually set the luminance data to skip internal loadImage/Jimp check
-        (potraceInstance as any)._luminanceData = bitmap;
-        (potraceInstance as any)._imageLoaded = true;
+        (potraceInstance as unknown as { _luminanceData: unknown; _imageLoaded: boolean })._luminanceData = bitmap;
+        (potraceInstance as unknown as { _luminanceData: unknown; _imageLoaded: boolean })._imageLoaded = true;
 
         const svg = potraceInstance.getSVG();
 
@@ -95,9 +95,9 @@ export const techIconRouter = router({
         });
 
         return techIcon;
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Conversion error details:", error);
-        const message = error?.message || String(error);
+        const message = error instanceof Error ? error.message : String(error);
         throw new Error(`Conversion Sequence Failed: ${message}`);
       }
     }),
