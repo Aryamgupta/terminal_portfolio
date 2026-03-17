@@ -12,6 +12,7 @@ async function getAboutData() {
     education: data.education,
     certificates: data.certificates,
     skillCategories: data.skillCategories,
+    experiences: data.experiences || [],
   };
 }
 

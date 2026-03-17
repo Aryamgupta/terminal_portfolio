@@ -19,6 +19,7 @@ import {
   Award,
   Terminal,
   Cpu,
+  Briefcase,
   LucideProps,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -357,6 +358,12 @@ export default function AdminLayout({
       label: "Projects",
       icon: PlusCircle,
       href: "/admin/projects",
+    },
+    {
+      id: "experience",
+      label: "Experience",
+      icon: Briefcase,
+      href: "/admin/experience",
     },
     {
       id: "education",

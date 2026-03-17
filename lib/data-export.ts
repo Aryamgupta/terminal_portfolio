@@ -16,14 +16,16 @@ export async function generatePortfolioJson() {
       education,
       certificates,
       skillCategories,
-      techIcons
+      techIcons,
+      experiences
     ] = await Promise.all([
       prisma.personalInfo.findFirst(),
       prisma.project.findMany({ orderBy: { order: "asc" } }),
       prisma.education.findMany(),
       prisma.certificate.findMany(),
       prisma.skillCategory.findMany(),
-      prisma.techIcon.findMany()
+      prisma.techIcon.findMany(),
+      prisma.experience.findMany({ orderBy: { order: "asc" } })
     ]);
 
     const portfolioData = {
@@ -33,6 +35,7 @@ export async function generatePortfolioJson() {
       certificates,
       skillCategories,
       techIcons,
+      experiences,
       exportedAt: new Date().toISOString()
     };
 

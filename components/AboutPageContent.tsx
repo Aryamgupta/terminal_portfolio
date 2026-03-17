@@ -23,9 +23,29 @@ interface Props {
   education: Array<{ name: string; institution: string; year?: string; type: string }>;
   certificates: Array<{ name: string; issuer?: string; link?: string; img?: string; id: string }>;
   skillCategories: Array<{ name: string; skills: string[] }>;
+  experiences: Array<{
+    id: string;
+    company: string;
+    role: string;
+    location?: string | null;
+    duration: string;
+    description: string[];
+  }>;
 }
 
-function ContactRow({ icon, label, id, activeTab, onOpen }: any) {
+function ContactRow({
+  icon,
+  label,
+  id,
+  activeTab,
+  onOpen,
+}: {
+  icon: string;
+  label?: string | null;
+  id: string;
+  activeTab: string;
+  onOpen: (id: string) => void;
+}) {
   const isActive = activeTab === id;
   return (
     <div
@@ -43,7 +63,19 @@ function ContactRow({ icon, label, id, activeTab, onOpen }: any) {
   );
 }
 
-function FileRow({ id, label, indent, activeTab, onOpen }: any) {
+function FileRow({
+  id,
+  label,
+  indent,
+  activeTab,
+  onOpen,
+}: {
+  id: string;
+  label: string;
+  indent: number;
+  activeTab: string;
+  onOpen: (id: string) => void;
+}) {
   const isActive = activeTab === id;
   return (
     <div
@@ -61,7 +93,19 @@ function FileRow({ id, label, indent, activeTab, onOpen }: any) {
   );
 }
 
-function FolderRow({ id, label, openFolders, onToggle, indent = 2 }: any) {
+function FolderRow({
+  id,
+  label,
+  openFolders,
+  onToggle,
+  indent = 2,
+}: {
+  id: string;
+  label: string;
+  openFolders: Record<string, boolean>;
+  onToggle: (id: string) => void;
+  indent?: number;
+}) {
   const isOpen = openFolders[id];
   return (
     <button
@@ -89,6 +133,7 @@ export default function AboutPageContent({
   education,
   certificates,
   skillCategories,
+  experiences,
 }: Props) {
   const isMobile = useIsMobile();
 
@@ -136,10 +181,30 @@ export default function AboutPageContent({
     };
   });
 
+  // Add professional experience
+  experiences.forEach((exp) => {
+    const key = `exp-${exp.id}`;
+    initialContent[key] = {
+      label: exp.company.toLowerCase().replace(/\s+/g, "-"),
+      lines: [
+        "/**",
+        ` * @company  ${exp.company}`,
+        ` * @role     ${exp.role}`,
+        ` * @location ${exp.location || "N/A"}`,
+        ` * @period   ${exp.duration}`,
+        " *",
+        " * Achievements:",
+        ...exp.description.map((line) => ` * - ${line}`),
+        " */",
+      ],
+    };
+  });
+
   const [openTabs, setOpenTabs] = useState<string[]>(["bio"]);
   const [activeTab, setActiveTab] = useState<string>("bio");
   const [openFolders, setOpenFolders] = useState<Record<string, boolean>>({
     "personal-info": true,
+    "professional-experience": true,
     education: true,
     certificates: false,
     contacts: false,
@@ -173,6 +238,15 @@ export default function AboutPageContent({
         <>
           <FileRow id="bio" label="bio" indent={3} {...sharedRowProps} />
           <FileRow id="interests" label="interests" indent={3} {...sharedRowProps} />
+        </>
+      )}
+
+      <FolderRow id="professional-experience" label="professional-experience" openFolders={openFolders} onToggle={toggleFolder} />
+      {openFolders["professional-experience"] && (
+        <>
+          {experiences.map((exp) => (
+            <FileRow key={`exp-${exp.id}`} id={`exp-${exp.id}`} label={exp.company.toLowerCase().replace(/\s+/g, "-")} indent={3} {...sharedRowProps} />
+          ))}
         </>
       )}
 
@@ -338,18 +412,53 @@ export default function AboutPageContent({
 
     if (activeTab.startsWith("cert-")) {
       const id = activeTab.split("-")[1];
-      const cert = certificates.find(c => c.id === id);
+      const cert = certificates.find((c) => c.id === id);
       return [
         {
           id: "verify-cert",
           title: "verify-cert.sh",
           lines: [
-            { prompt: "$", cmd: " check-validity credential.json", color: "#43D9AD" },
+            {
+              prompt: "$",
+              cmd: " check-validity credential.json",
+              color: "#43D9AD",
+            },
             { prompt: ">", cmd: " Status: VALID", color: "#27C840" },
             { prompt: "$", cmd: " cat issuer.txt", color: "#43D9AD" },
-            { prompt: ">", cmd: ` ${cert?.issuer || "Verified Issuer"}`, color: "#FFFFFF" },
+            {
+              prompt: ">",
+              cmd: ` ${cert?.issuer || "Verified Issuer"}`,
+              color: "#FFFFFF",
+            },
           ],
-        }
+        },
+      ];
+    }
+
+    if (activeTab.startsWith("exp-")) {
+      const id = activeTab.split("-")[1];
+      const exp = experiences.find((e) => e.id === id);
+      return [
+        {
+          id: "exp-status",
+          title: "work-history.sh",
+          lines: [
+            { prompt: "$", cmd: " cat current_role.json", color: "#43D9AD" },
+            {
+              prompt: ">",
+              cmd: ` { "company": "${exp?.company}", "role": "${exp?.role}" }`,
+              color: "#FFFFFF",
+            },
+            { prompt: "$", cmd: " get --duration", color: "#43D9AD" },
+            { prompt: ">", cmd: ` "${exp?.duration}"`, color: "#27C840" },
+            { prompt: "$", cmd: " echo $LOCATION", color: "#43D9AD" },
+            {
+              prompt: ">",
+              cmd: ` ${exp?.location || "Remote"}`,
+              color: "#FFFFFF",
+            },
+          ],
+        },
       ];
     }
 
@@ -399,7 +508,7 @@ export default function AboutPageContent({
         ],
       },
     ];
-  }, [activeTab, personalInfo, education, certificates, skillCategories]);
+  }, [activeTab, personalInfo, education, certificates, skillCategories, experiences]);
 
   const rightPanel = (
     <aside style={{ width: "320px", borderLeft: "1px solid #1E2D3D", overflowY: "auto", background: "#011627", display: isMobile ? "none" : "block", flexShrink: 0 }}>

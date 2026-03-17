@@ -10,6 +10,7 @@ import { analyticsRouter } from "./analytics";
 import { authRouter } from "./auth";
 import { messageRouter } from "./message";
 import { systemRouter } from "./system";
+import { experienceRouter } from "./experience";
 
 export const appRouter = router({
   project: projectRouter,
@@ -23,6 +24,7 @@ export const appRouter = router({
   auth: authRouter,
   message: messageRouter,
   system: systemRouter,
+  experience: experienceRouter,
 });
 
 export type AppRouter = typeof appRouter;
