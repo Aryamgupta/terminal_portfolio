@@ -1,0 +1,88 @@
+/* components/sections/RightPanel.module.css */
+
+.rightPanel {
+  width: var(--right-panel-width);
+  border-left: 1px solid var(--color-border);
+  overflow-y: auto;
+  background-color: var(--color-bg-primary);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  
+  /* Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.rightPanel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.rightPanel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rightPanel::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 4px;
+}
+
+.rightPanel::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-text-muted);
+}
+
+.panelHeader {
+  padding: 20px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-size: 13px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  flex-shrink: 0;
+  background-color: var(--color-bg-primary);
+}
+
+.cardsContainer {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Responsive: Hide on mobile */
+@media (max-width: 1024px) {
+  .rightPanel {
+    display: none;
+  }
+}
+
+/* Responsive: Adjust width on smaller screens */
+@media (max-width: 1400px) {
+  .rightPanel {
+    width: 280px;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: more) {
+  .rightPanel {
+    border-left-width: 2px;
+  }
+  
+  .panelHeader {
+    border-bottom-width: 2px;
+  }
+}
+
+/* Focus visible */
+.rightPanel:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: -2px;
+}
+
+/* Print styles */
+@media print {
+  .rightPanel {
+    display: none;
+  }
+}

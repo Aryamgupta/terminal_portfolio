@@ -1,6 +1,7 @@
+import AboutPageContent from "@/components/AboutPageRefactored";
 import fs from "fs";
 import path from "path";
-import AboutPageContent from "@/components/AboutPageContent";
+// import AboutPageContent from "@/components/AboutPageContent";
 
 async function getAboutData() {
   const dataPath = path.join(process.cwd(), "public/data/portfolio-data.json");

@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
-// Portrait board — 15 cols × 20 rows, like Figma
+
 const COLS = 15;
 const ROWS = 20;
 const CELL = 16;
-const BOARD_W = COLS * CELL; // 240px
-const BOARD_H = ROWS * CELL; // 320px
+const BOARD_W = COLS * CELL;
+const BOARD_H = ROWS * CELL;
 const TOTAL_FOOD = 10;
 const SPEED_MS = 130;
 
@@ -21,6 +21,7 @@ const OPPOSITE: Record<Dir, Dir> = {
   LEFT: "RIGHT",
   RIGHT: "LEFT",
 };
+
 const INIT_SNAKE: Pt[] = [
   { x: 7, y: 5 },
   { x: 7, y: 6 },
@@ -94,9 +95,8 @@ export default function SnakeGame() {
       ctx.stroke();
     }
 
-    // ── Snake: draw as thick glowing path ──────────────────────────────────
+    // ── Snake ─────────────────────────────────────────────────────────────
     if (snake.length > 1) {
-      // Outer glow layer
       ctx.beginPath();
       ctx.moveTo(snake[0].x * CELL + CELL / 2, snake[0].y * CELL + CELL / 2);
       for (let i = 1; i < snake.length; i++) {
@@ -110,7 +110,6 @@ export default function SnakeGame() {
       ctx.shadowBlur = 5;
       ctx.stroke();
 
-      // Core bright line
       ctx.beginPath();
       ctx.moveTo(snake[0].x * CELL + CELL / 2, snake[0].y * CELL + CELL / 2);
       for (let i = 1; i < snake.length; i++) {
@@ -124,34 +123,49 @@ export default function SnakeGame() {
       ctx.shadowBlur = 0;
     }
 
-    // ── Head dot ────────────────────────────────────────────────────────────
+    // ── Head ──────────────────────────────────────────────────────────────
     if (snake.length > 0) {
       const head = snake[0];
-      // Bright white with strong teal glow — matches Figma head dot
       ctx.fillStyle = "#FFFFFF";
       ctx.shadowColor = "#43D9AD";
       ctx.shadowBlur = 18;
       ctx.beginPath();
-      ctx.arc(head.x * CELL + CELL / 2, head.y * CELL + CELL / 2, 6, 0, Math.PI * 2);
+      ctx.arc(
+        head.x * CELL + CELL / 2,
+        head.y * CELL + CELL / 2,
+        6,
+        0,
+        Math.PI * 2,
+      );
       ctx.fill();
       ctx.shadowBlur = 0;
     }
 
-    // ── Food — green glowing dot matching Figma ─────────────────────────────
+    // ── Food ──────────────────────────────────────────────────────────────
     if (gState !== "idle") {
-      // Outer glow ring
       ctx.fillStyle = "rgba(67,217,173,0.2)";
       ctx.shadowColor = "#43D9AD";
       ctx.shadowBlur = 20;
       ctx.beginPath();
-      ctx.arc(food.x * CELL + CELL / 2, food.y * CELL + CELL / 2, 8, 0, Math.PI * 2);
+      ctx.arc(
+        food.x * CELL + CELL / 2,
+        food.y * CELL + CELL / 2,
+        8,
+        0,
+        Math.PI * 2,
+      );
       ctx.fill();
-      // Inner bright core
       ctx.fillStyle = "#43D9AD";
       ctx.shadowColor = "#43D9AD";
       ctx.shadowBlur = 12;
       ctx.beginPath();
-      ctx.arc(food.x * CELL + CELL / 2, food.y * CELL + CELL / 2, 4, 0, Math.PI * 2);
+      ctx.arc(
+        food.x * CELL + CELL / 2,
+        food.y * CELL + CELL / 2,
+        4,
+        0,
+        Math.PI * 2,
+      );
       ctx.fill();
       ctx.shadowBlur = 0;
     }
@@ -254,67 +268,83 @@ export default function SnakeGame() {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
+      className="cardSnake"
       style={{
         display: "flex",
+
         flexDirection: isMobile ? "column" : "row",
-        gap: isMobile ? "24px" : "14px",
-        background: "#011B2D",
-        border: "1.5px solid rgba(67,217,173,0.25)",
+        gap: isMobile ? "20px" : "20px",
+        // background:
+        //   "linear-gradient(135deg, #0d1b2a 0%, #0a1428 50%, #051015 100%)",
+        backgroundColor: "transparent",
+        border: "2px solid rgba(67,217,173,0.4)",
         borderRadius: "16px",
-        padding: isMobile ? "20px" : "18px",
-        boxShadow: [
-          "0 0 0 1px rgba(67,217,173,0.08)",
-          "0 0 40px rgba(67,217,173,0.12)",
-          "0 0 80px rgba(67,217,173,0.06)",
-          "0 20px 60px rgba(0,0,0,0.6)",
-          "inset 0 1px 0 rgba(67,217,173,0.1)",
-        ].join(","),
+        padding: isMobile ? "20px" : "24px",
+
         position: "relative",
         userSelect: "none",
         alignItems: isMobile ? "center" : "flex-start",
         maxWidth: "100%",
         boxSizing: "border-box",
+        
       }}
     >
-      {/* Corner pins - Hidden on very small screens to save space if needed, or kept for aesthetic */}
-      {(
-        [
-          { top: "8px", left: "8px" },
-          { top: "8px", right: "8px" },
-          { bottom: "8px", left: "8px" },
-          { bottom: "8px", right: "8px" },
-        ] as React.CSSProperties[]
-      ).map((pos, i) => (
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            width: "7px",
-            height: "7px",
-            borderRadius: "50%",
-            border: "1.5px solid #1E2D3D",
-            background: "#011221",
-            ...pos,
-            zIndex: 5,
-          }}
-        />
-      ))}
+      {/* ── Corner Pins (Decorative) ──────────────────────────────────────── */}
+      {!isMobile && (
+        <>
+          {(
+            [
+              { top: "12px", left: "12px" },
+              { top: "12px", right: "12px" },
+              { bottom: "12px", left: "12px" },
+              { bottom: "12px", right: "12px" },
+            ] as React.CSSProperties[]
+          ).map((pos, i) => (
+            <div
+              key={i}
+              style={{
+                position: "absolute",
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                border: "1.5px solid #43D9AD",
+                background: "#011627",
+                boxShadow:
+                  "0 0 12px rgba(67,217,173,0.6), 0 0 24px rgba(67,217,173,0.3)",
+                ...pos,
+                zIndex: 5,
+              }}
+            />
+          ))}
+        </>
+      )}
 
-      {/* ── Game Board ────────────────────────────────────────────────── */}
-      <div style={{ position: "relative", flexShrink: 0, width: isMobile ? "100%" : "auto", display: "flex", justifyContent: "center" }}>
+      {/* ── Game Board (Left Side) ────────────────────────────────────────── */}
+      <div
+        style={{
+          position: "relative",
+          flexShrink: 0,
+          width: isMobile ? "100%" : "auto",
+          display: "flex",
+          justifyContent: "center",
+          flex: isMobile ? "0 1 auto" : "1 1 auto",
+        }}
+      >
         <canvas
           ref={canvasRef}
           width={BOARD_W}
           height={BOARD_H}
           style={{
             display: "block",
-            background: "linear-gradient(180deg, #010C15 0%, #010810 100%)",
-            borderRadius: "8px",
-            border: "1px solid rgba(67,217,173,0.15)",
-            boxShadow: "inset 0 0 30px rgba(67,217,173,0.04)",
-            width: isMobile ? "100%" : `${BOARD_W}px`,
-            height: "auto",
-            maxWidth: `${BOARD_W}px`,
+            background:
+              "linear-gradient(180deg, #050810 0%, #0a0f1a 50%, #060b15 100%)",
+            borderRadius: "12px",
+            border: "1px solid rgba(67,217,173,0.3)",
+            boxShadow:
+              "inset 0 0 30px rgba(67,217,173,0.1), 0 0 50px rgba(67,217,173,0.2)",
+            width: isMobile ? "100%" : "280px",
+            height: isMobile ? "auto" : "370px",
+            maxWidth: "100%",
             aspectRatio: `${COLS} / ${ROWS}`,
           }}
         />
@@ -329,49 +359,97 @@ export default function SnakeGame() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              gap: "16px",
-              background: "rgba(1,8,14,0.75)",
-              borderRadius: "8px",
-              backdropFilter: "blur(3px)",
+              gap: "24px",
+              background:
+                "linear-gradient(180deg, rgba(5,8,16,0.9) 0%, rgba(5,8,16,0.95) 100%)",
+              borderRadius: "12px",
+              backdropFilter: "blur(6px)",
               zIndex: 10,
-              width: isMobile ? "100%" : `${BOARD_W}px`,
+              width: isMobile ? "100%" : "280px",
               left: "50%",
               transform: "translateX(-50%)",
             }}
           >
             {gState === "over" && (
               <>
-                <p style={{ color: "#E99287", fontFamily: "'Fira Code',monospace", fontSize: "14px" }}>
-                  {"// game over"}
+                <p
+                  style={{
+                    color: "#FF6B6B",
+                    fontFamily: "'Fira Code', monospace",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    margin: 0,
+                  }}
+                >
+                  game over
                 </p>
-                <p style={{ color: "#607B96", fontFamily: "'Fira Code',monospace", fontSize: "12px" }}>
+                <p
+                  style={{
+                    color: "#607B96",
+                    fontFamily: "'Fira Code', monospace",
+                    fontSize: "12px",
+                    margin: 0,
+                  }}
+                >
                   score: {score}
                 </p>
               </>
             )}
             {gState === "won" && (
               <>
-                <p style={{ color: "#43D9AD", fontFamily: "'Fira Code',monospace", fontSize: "14px" }}>
-                  {"// you won! 🎉"}
+                <p
+                  style={{
+                    color: "#43D9AD",
+                    fontFamily: "'Fira Code', monospace",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    margin: 0,
+                  }}
+                >
+                  you won! 🎉
                 </p>
-                <p style={{ color: "#607B96", fontFamily: "'Fira Code',monospace", fontSize: "12px" }}>
+                <p
+                  style={{
+                    color: "#607B96",
+                    fontFamily: "'Fira Code', monospace",
+                    fontSize: "12px",
+                    margin: 0,
+                  }}
+                >
                   score: {score}
                 </p>
               </>
             )}
+            {gState === "idle" && (
+              <p
+                style={{
+                  color: "#607B96",
+                  fontFamily: "'Fira Code', monospace",
+                  fontSize: "11px",
+                  margin: 0,
+                  textAlign: "center",
+                }}
+              >
+                press start to play
+              </p>
+            )}
+
             <button
               onClick={startGame}
               style={{
-                padding: "10px 24px",
-                background: "linear-gradient(135deg, #FEA55F, #e8923f)",
+                padding: "12px 32px",
+                background: "linear-gradient(135deg, #FFA34D 0%, #FF8C1A 100%)",
                 color: "#011627",
-                fontFamily: "'Fira Code',monospace",
+                fontFamily: "'Fira Code', monospace",
                 fontSize: "14px",
                 fontWeight: 700,
                 border: "none",
                 borderRadius: "8px",
                 cursor: "pointer",
-                boxShadow: "0 0 20px rgba(254,165,95,0.35)",
+                boxShadow:
+                  "0 0 30px rgba(255,140,26,0.6), 0 8px 30px rgba(255,140,26,0.4)",
+                transition: "all 0.2s ease",
+                letterSpacing: "0.5px",
               }}
             >
               {gState === "idle" ? "start-game" : "restart"}
@@ -380,117 +458,167 @@ export default function SnakeGame() {
         )}
       </div>
 
-      {/* ── Right Panel ───────────────────────────────────────────────── */}
+      {/* ── Right Panel (Controls & Stats) ────────────────────────────────── */}
       <div
         style={{
-          width: isMobile ? "100%" : "148px",
+          width: isMobile ? "100%" : "180px",
           display: "flex",
           flexDirection: "column",
-          gap: "16px",
+          gap: "18px",
           position: "relative",
         }}
       >
-        <div style={{
-          display: isMobile ? "grid" : "flex",
-          gridTemplateColumns: isMobile ? "1fr 1fr" : "none",
-          flexDirection: "column",
-          gap: "16px",
-          width: "100%",
-        }}>
-          {/* Controls */}
-          <div
-            style={{
-              background: "rgba(1,12,21,0.7)",
-              border: "1px solid rgba(67,217,173,0.12)",
-              borderRadius: "10px",
-              padding: "12px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <div style={{ alignSelf: "flex-start", width: "100%" }}>
-              <p style={{ color: "#607B96", fontSize: "10px", fontFamily: "'Fira Code',monospace", margin: "0 0 2px" }}>
-                {"// use keyboard"}
-              </p>
-              <p style={{ color: "#607B96", fontSize: "10px", fontFamily: "'Fira Code',monospace", margin: "0 0 12px" }}>
-                {"// arrows to play"}
-              </p>
-            </div>
-
-            {/* D-pad */}
-            <div
+        {/* Controls Box */}
+        <div
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(1,12,21,0.8) 0%, rgba(5,15,25,0.7) 100%)",
+            border: "1px solid rgba(67,217,173,0.25)",
+            borderRadius: "10px",
+            padding: "14px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "12px",
+            boxShadow:
+              "0 0 20px rgba(67,217,173,0.1), inset 0 1px 0 rgba(67,217,173,0.15)",
+          }}
+        >
+          {/* Comment Labels */}
+          <div style={{ width: "100%", marginBottom: "4px" }}>
+            <p
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 30px)",
-                gridTemplateRows: "repeat(2, 30px)",
-                gap: "4px",
-                justifyContent: "center",
+                color: "#43D9AD",
+                fontSize: "9px",
+                fontFamily: "'Fira Code', monospace",
+                margin: "0 0 1px",
+                opacity: 0.8,
+                letterSpacing: "0.3px",
               }}
             >
-              <span />
-              <DpadBtn label="▲" onClick={() => handleDirBtn("UP")} />
-              <span />
-              <DpadBtn label="◀" onClick={() => handleDirBtn("LEFT")} />
-              <DpadBtn label="▼" onClick={() => handleDirBtn("DOWN")} />
-              <DpadBtn label="▶" onClick={() => handleDirBtn("RIGHT")} />
-            </div>
+              {"// use keyboard"}
+            </p>
+            <p
+              style={{
+                color: "#43D9AD",
+                fontSize: "9px",
+                fontFamily: "'Fira Code', monospace",
+                margin: 0,
+                opacity: 0.8,
+                letterSpacing: "0.3px",
+              }}
+            >
+              {" // arrows to play"}
+            </p>
           </div>
 
-          {/* Stats Section (Food & Score) */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {/* Food left */}
-            <div>
-              <p style={{ color: "#607B96", fontSize: "10px", fontFamily: "'Fira Code',monospace", margin: "0 0 8px" }}>
-                {"// food left"}
-              </p>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "4px" }}>
-                {Array.from({ length: TOTAL_FOOD }).map((_, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      width: "6px",
-                      height: "6px",
-                      borderRadius: "50%",
-                      background: i < foodLeft ? "#43D9AD" : "rgba(67,217,173,0.1)",
-                      boxShadow: i < foodLeft ? "0 0 6px #43D9AD" : "none",
-                      transition: "all 0.35s",
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
+          {/* D-pad Controls */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 36px)",
+              gridTemplateRows: "repeat(3, 36px)",
+              gap: "6px",
+              justifyContent: "center",
+            }}
+          >
+            <span />
+            <DpadBtn label="▲" onClick={() => handleDirBtn("UP")} />
+            <span />
+            <DpadBtn label="◀" onClick={() => handleDirBtn("LEFT")} />
+            <span />
+            <DpadBtn label="▶" onClick={() => handleDirBtn("RIGHT")} />
+            <span />
+            <DpadBtn label="▼" onClick={() => handleDirBtn("DOWN")} />
+            <span />
+          </div>
+        </div>
 
-            {/* Score */}
-            {gState === "playing" && (
-              <p style={{ color: "#607B96", fontSize: "11px", fontFamily: "'Fira Code',monospace", margin: 0 }}>
-                score: <span style={{ color: "#43D9AD" }}>{score}</span>
-              </p>
-            )}
-            
-            {/* Skip Button - Positioned within flow on mobile */}
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "auto" }}>
-              <button
-                onClick={() => {
-                  gStateRef.current = "idle";
-                  setGState("idle");
-                }}
+        {/* Food Left Section */}
+        <div>
+          <p
+            style={{
+              color: "#43D9AD",
+              fontSize: "9px",
+              fontFamily: "'Fira Code', monospace",
+              margin: "0 0 10px",
+              opacity: 0.8,
+              letterSpacing: "0.3px",
+            }}
+          >
+            {"// food left"}
+          </p>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(5, 1fr)",
+              gap: "8px",
+              justifyContent: "center",
+            }}
+          >
+            {Array.from({ length: TOTAL_FOOD }).map((_, i) => (
+              <div
+                key={i}
                 style={{
-                  padding: "4px 12px",
-                  background: "transparent",
-                  color: "#607B96",
-                  fontFamily: "'Fira Code',monospace",
-                  fontSize: "11px",
-                  border: "1px solid rgba(96,123,150,0.5)",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  transition: "all 0.2s",
+                  width: "10px",
+                  height: "10px",
+                  borderRadius: "50%",
+                  background: i < foodLeft ? "#43D9AD" : "rgba(67,217,173,0.1)",
+                  boxShadow:
+                    i < foodLeft
+                      ? "0 0 12px rgba(67,217,173,0.9), 0 0 24px rgba(67,217,173,0.5)"
+                      : "none",
+                  transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
                 }}
-              >
-                skip
-              </button>
-            </div>
+              />
+            ))}
           </div>
+        </div>
+
+        {/* Score & Skip */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+            marginTop: "auto",
+          }}
+        >
+          {gState === "playing" && (
+            <p
+              style={{
+                color: "#607B96",
+                fontSize: "11px",
+                fontFamily: "'Fira Code', monospace",
+                margin: 0,
+                textAlign: "center",
+              }}
+            >
+              score:{" "}
+              <span style={{ color: "#43D9AD", fontWeight: 700 }}>{score}</span>
+            </p>
+          )}
+
+          <button
+            onClick={() => {
+              gStateRef.current = "idle";
+              setGState("idle");
+            }}
+            style={{
+              padding: "8px 16px",
+              background: "transparent",
+              color: "#607B96",
+              fontFamily: "'Fira Code', monospace",
+              fontSize: "11px",
+              border: "1px solid rgba(96,123,150,0.6)",
+              borderRadius: "7px",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              letterSpacing: "0.5px",
+            }}
+          >
+            skip
+          </button>
         </div>
       </div>
     </div>
@@ -507,21 +635,30 @@ function DpadBtn({ label, onClick }: { label: string; onClick: () => void }) {
       }}
       onMouseUp={() => setPressed(false)}
       onMouseLeave={() => setPressed(false)}
+      onTouchStart={() => {
+        setPressed(true);
+        onClick();
+      }}
+      onTouchEnd={() => setPressed(false)}
       style={{
-        width: "32px",
-        height: "32px",
-        background: pressed ? "rgba(67,217,173,0.15)" : "rgba(1,12,21,0.8)",
-        border: `1px solid ${pressed ? "rgba(67,217,173,0.5)" : "rgba(30,45,61,0.8)"}`,
+        width: "36px",
+        height: "36px",
+        background: pressed ? "rgba(67,217,173,0.25)" : "rgba(1,12,21,0.9)",
+        border: `1px solid ${pressed ? "#43D9AD" : "rgba(67,217,173,0.35)"}`,
         borderRadius: "7px",
         color: pressed ? "#43D9AD" : "#FFFFFF",
-        fontSize: "9px",
+        fontSize: "12px",
         lineHeight: 1,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         cursor: "pointer",
-        transition: "all 0.1s",
-        boxShadow: pressed ? "0 0 12px rgba(67,217,173,0.3)" : "none",
+        transition: "all 0.1s ease",
+        boxShadow: pressed
+          ? "0 0 18px rgba(67,217,173,0.6), inset 0 0 8px rgba(67,217,173,0.25)"
+          : "0 0 8px rgba(67,217,173,0.1)",
+        fontWeight: 700,
+        padding: 0,
       }}
     >
       {label}

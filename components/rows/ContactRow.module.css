@@ -1,0 +1,103 @@
+/* components/rows/ContactRow.module.css */
+
+.contactRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0 6px 32px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  transition: color var(--transition-fast);
+  user-select: none;
+  
+  /* Keyboard focus styles */
+  &:focus-visible {
+    outline: 2px solid var(--color-accent-primary);
+    outline-offset: -2px;
+    background-color: rgba(67, 217, 173, 0.1);
+  }
+  
+  /* Hover state */
+  &:hover {
+    color: var(--color-text-primary);
+    background-color: rgba(67, 217, 173, 0.05);
+  }
+  
+  /* Active state */
+  &.active {
+    color: var(--color-text-primary);
+    background-color: rgba(67, 217, 173, 0.1);
+    border-left: 3px solid var(--color-accent-success);
+    padding-left: 29px;
+  }
+}
+
+.icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+}
+
+.label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+  font-family: var(--font-mono);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .contactRow {
+    padding-left: 28px;
+    font-size: 11px;
+    
+    &.active {
+      padding-left: 25px;
+    }
+  }
+  
+  .label {
+    max-width: 100px;
+  }
+  
+  .icon {
+    width: 18px;
+    font-size: 12px;
+  }
+}
+
+/* Hover for touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .contactRow {
+    &:active {
+      background-color: rgba(67, 217, 173, 0.15);
+    }
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: more) {
+  .contactRow {
+    border-left: 2px solid transparent;
+    
+    &.active {
+      border-left-width: 4px;
+    }
+    
+    &:hover {
+      background-color: rgba(67, 217, 173, 0.15);
+    }
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .contactRow {
+    transition: none;
+  }
+}

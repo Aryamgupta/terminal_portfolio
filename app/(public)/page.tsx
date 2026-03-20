@@ -1,22 +1,26 @@
 import fs from "fs";
 import path from "path";
 import SnakeGame from "@/components/SnakeGame";
+import Typewriter from "typewriter-effect";
+import TypeWritterRole from "@/components/TypeWritterRole";
 
 async function getHomeData() {
   const dataPath = path.join(process.cwd(), "public/data/portfolio-data.json");
   const jsonData = fs.readFileSync(dataPath, "utf8");
   const data = JSON.parse(jsonData);
-  
+
   const personalInfo = data.personalInfo;
   return {
     name: personalInfo?.name || "Aryam Gupta",
-    role: personalInfo?.role?.[0] || "Front-end developer",
+    role: personalInfo?.role || "Front-end developer",
     githubLink: personalInfo?.githubLink || "https://github.com/aryam-gupta",
   };
 }
 
 export default async function HomePage() {
   const { name, role, githubLink } = await getHomeData();
+
+  console.log({ role });
 
   return (
     <div
@@ -39,7 +43,8 @@ export default async function HomePage() {
           right: "0px",
           width: "420px",
           height: "420px",
-          background: "radial-gradient(circle, rgba(67,217,173,0.18) 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(67,217,173,0.18) 0%, transparent 70%)",
           filter: "blur(60px)",
           pointerEvents: "none",
           zIndex: 0,
@@ -53,7 +58,8 @@ export default async function HomePage() {
           left: "0px",
           width: "380px",
           height: "380px",
-          background: "radial-gradient(circle, rgba(77,91,206,0.14) 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(77,91,206,0.14) 0%, transparent 70%)",
           filter: "blur(60px)",
           pointerEvents: "none",
           zIndex: 0,
@@ -86,30 +92,42 @@ export default async function HomePage() {
           >
             {name}
           </h1>
-          <h2
+          <TypeWritterRole roles={role} />
+
+          <div
             style={{
-              color: "#4D5BCE",
-              fontSize: "clamp(18px, 2.5vw, 28px)",
-              fontWeight: 400,
+              marginTop: "48px",
               display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              fontFamily: "'Fira Code', monospace",
+              flexDirection: "column",
+              gap: "6px",
             }}
           >
-            <span style={{ color: "#43D9AD" }}>&gt;</span>{" "}
-            <span>{role}</span>
-          </h2>
-
-          <div style={{ marginTop: "48px", display: "flex", flexDirection: "column", gap: "6px" }}>
-            <p style={{ color: "#607B96", fontSize: "13px", fontFamily: "'Fira Code', monospace" }}>
+            <p
+              style={{
+                color: "#607B96",
+                fontSize: "13px",
+                fontFamily: "'Fira Code', monospace",
+              }}
+            >
               {"// complete the game to continue"}
             </p>
-            
-            <p style={{ color: "#607B96", fontSize: "13px", fontFamily: "'Fira Code', monospace" }}>
+
+            <p
+              style={{
+                color: "#607B96",
+                fontSize: "13px",
+                fontFamily: "'Fira Code', monospace",
+              }}
+            >
               {"// you can also see it on my Github page"}
             </p>
-            <p style={{ fontSize: "13px", marginTop: "8px", fontFamily: "'Fira Code', monospace" }}>
+            <p
+              style={{
+                fontSize: "13px",
+                marginTop: "8px",
+                fontFamily: "'Fira Code', monospace",
+              }}
+            >
               <span style={{ color: "#4D5BCE" }}>const</span>{" "}
               <span style={{ color: "#43D9AD" }}>githubLink</span>
               {" = "}
@@ -139,7 +157,7 @@ export default async function HomePage() {
           display: flex;
           flex-direction: row;
           align-items: center;
-          justify-content: center;
+          justify-content: space-evenly;
           gap: 60px;
           width: 100%;
           padding: 0 60px;

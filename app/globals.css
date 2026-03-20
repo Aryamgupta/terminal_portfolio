@@ -96,3 +96,25 @@ html, body {
     display: flex;
   }
 }
+
+.cardSnake {
+  position: relative;
+  z-index: 1;
+}
+
+.cardSnake::before {
+  content: "";
+  position: absolute;
+  inset: -60px; /* bigger spread */
+  
+  background: radial-gradient(
+    circle at center,
+    rgba(67,217,173,0.25) 0%,
+    rgba(67,217,173,0.12) 25%,
+    rgba(67,217,173,0.06) 45%,
+    transparent 70%
+  );
+
+  filter: blur(60px);
+  z-index: -1;
+}

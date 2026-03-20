@@ -1,0 +1,127 @@
+/* components/layout/Layout.module.css */
+
+:root {
+ 
+  /* BACKGROUNDS */
+  --color-bg-primary: #011627;        /* Very dark blue */
+  --color-bg-secondary: #010c15;      /* Darker blue */
+  --color-bg-tertiary: #011221;       /* Darkest blue (sidebar) */
+  --color-border: #1e2d3d;            /* Dark blue borders */
+  
+  /* TEXT COLORS */
+  --color-text-primary: #ffffff;      /* Bright white */
+  --color-text-secondary: #607b96;    /* Light gray */
+  --color-text-muted: #2b3d4f;        /* Muted gray */
+  
+  /* ACCENT COLORS */
+  --color-accent-primary: #43d9ad;    /* Bright teal */
+  --color-accent-secondary: #4d5bce;  /* Bright purple */
+  --color-accent-success: #27c840;    /* Bright green */
+  --color-accent-warning: #febc2e;    /* Bright amber */
+  --color-accent-danger: #ff5f57;     /* Bright red */
+
+
+  
+  /* Typography */
+  --font-mono: "Fira Code", "Courier New", monospace;
+  --font-sans: system-ui, -apple-system, sans-serif;
+  
+  /* Sizing */
+  --sidebar-width: 220px;
+  --right-panel-width: 320px;
+  --border-radius: 8px;
+  
+  /* Transitions */
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.15s ease;
+  --transition-slow: 0.3s ease;
+}
+
+.layoutContainer {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  border-right: 1px solid var(--color-border);
+  background-color: var(--color-bg-tertiary);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  
+  /* Scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-text-muted);
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+  .layoutContainer {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    max-height: 300px;
+    overflow-y: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layoutContainer {
+    --transition-fast: 0s;
+    --transition-normal: 0s;
+    --transition-slow: 0s;
+  }
+}
+
+/* Accessibility */
+
+
+/* Focus states for accessibility */
+.sidebar:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: -2px;
+}
+
+/* Print styles */
+@media print {
+  .layoutContainer {
+    display: block;
+    height: auto;
+    overflow: visible;
+  }
+  
+  .sidebar {
+    display: none;
+  }
+}
