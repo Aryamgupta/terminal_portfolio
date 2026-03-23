@@ -22,22 +22,20 @@ export function CodeViewer({ lines, techIcons }: CodeViewerProps) {
           return (
             <span
               key={i}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                verticalAlign: "middle",
-                margin: "0 6px",
-                width: "16px",
-                height: "16px",
-                color: "#FEA55F", // Theme accent color
-              }}
+              className={styles.techIconInline}
               title={icon.name}
               dangerouslySetInnerHTML={{ __html: icon.icon }}
             />
           );
         }
       }
-      return part;
+      
+      const isTechHeader = part.includes("Technologies:");
+      return (
+        <span key={i} className={isTechHeader ? styles.technologiesSection : ""}>
+          {part}
+        </span>
+      );
     });
   };
 

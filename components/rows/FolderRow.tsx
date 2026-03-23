@@ -8,6 +8,7 @@ interface FolderRowProps {
   openFolders: Record<string, boolean>;
   onToggle: (id: string) => void;
   indent?: number;
+  adminActions?: React.ReactNode;
 }
 
 export function FolderRow({
@@ -16,6 +17,7 @@ export function FolderRow({
   openFolders,
   onToggle,
   indent = 0,
+  adminActions,
 }: FolderRowProps) {
   const isOpen = openFolders[id] || false;
 
@@ -45,12 +47,14 @@ export function FolderRow({
       role="treeitem"
       tabIndex={0}
       aria-expanded={isOpen}
+      aria-selected={false}
       aria-label={`Folder: ${label}`}
     >
       <span className={styles.icon} aria-hidden="true">
         {isOpen ? "▼" : "▶"}
       </span>
       <span className={styles.label}>{label}</span>
+      {adminActions && <div className={styles.adminActions}>{adminActions}</div>}
     </div>
   );
 }

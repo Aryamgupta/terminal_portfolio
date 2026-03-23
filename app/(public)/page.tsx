@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import SnakeGame from "@/components/SnakeGame";
-import Typewriter from "typewriter-effect";
 import TypeWritterRole from "@/components/TypeWritterRole";
 
 async function getHomeData() {

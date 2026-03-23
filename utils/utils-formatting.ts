@@ -8,10 +8,13 @@
  * "Full Stack Developer" -> "full-stack-developer"
  */
 export function formatContentLines(text: string): string {
+  // Replace multiple spaces/underscores/hyphens with a single hyphen for internal consistency
+  // but keep case and some characters for a more "file-like" but readable name
   return text
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
+    .trim()
+    .replace(/[^a-zA-Z0-9\s()]/g, "") // Keep alphanumeric, spaces, and parens
+    .replace(/\s+/g, "-")            // Spaces to hyphens
+    .toLowerCase();
 }
 
 /**

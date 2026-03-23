@@ -15,6 +15,7 @@ import { trpc } from "@/utils/trpc";
 import Button from "@/components/UI/Button";
 import InputField from "@/components/UI/InputField";
 import { motion, AnimatePresence } from "framer-motion";
+import { Education } from "@prisma/client";
 
 export default function EducationPage() {
   const [isAdding, setIsAdding] = useState(false);
@@ -54,7 +55,7 @@ export default function EducationPage() {
     setEditingId(null);
   };
 
-  const handleEdit = (edu: any) => {
+  const handleEdit = (edu: Education) => {
     setFormData({
       name: edu.name,
       institution: edu.institution,
@@ -133,7 +134,7 @@ export default function EducationPage() {
               margin: "12px 0 0 0",
             }}
           >
-            // manage your educational journey
+            {"// manage your educational journey"}
           </p>
         </div>
 
@@ -246,6 +247,12 @@ export default function EducationPage() {
                   placeholder="e.g. 9.5 CGPA"
                   value={formData.percentage}
                   onChange={(v) => setFormData({ ...formData, percentage: v })}
+                />
+                <InputField
+                  label="Type"
+                  placeholder="e.g. University"
+                  value={formData.type}
+                  onChange={(v) => setFormData({ ...formData, type: v })}
                 />
               </div>
 

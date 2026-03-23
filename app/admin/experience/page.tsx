@@ -9,13 +9,25 @@ import {
   MapPin,
   Calendar,
   X,
-  PlusCircle,
 } from "lucide-react";
 import { trpc } from "@/utils/trpc";
 import Button from "@/components/UI/Button";
 import InputField from "@/components/UI/InputField";
 import TextAreaField from "@/components/UI/TextAreaField";
 import { motion, AnimatePresence } from "framer-motion";
+
+const GlobalAdminStyles = () => (
+  <style jsx global>{`
+    .tech-icon-wrapper svg {
+      width: 100% !important;
+      height: 100% !important;
+      fill: currentColor !important;
+    }
+    .tech-icon-wrapper path {
+      fill: currentColor !important;
+    }
+  `}</style>
+);
 
 export default function ExperienceAdminPage() {
   const [isAdding, setIsAdding] = useState(false);
@@ -26,10 +38,12 @@ export default function ExperienceAdminPage() {
     location: "",
     duration: "",
     description: "", // Will be split by newlines
+    techIds: [] as string[],
     order: 0,
   });
 
   const experienceQuery = trpc.experience.getAll.useQuery();
+  const techIconsQuery = trpc.techIcon.getAll.useQuery();
 
   const upsertMutation = trpc.experience.upsert.useMutation({
     onSuccess: () => {
@@ -51,6 +65,7 @@ export default function ExperienceAdminPage() {
       location: "",
       duration: "",
       description: "",
+      techIds: [],
       order: 0,
     });
     setIsAdding(false);
@@ -64,6 +79,7 @@ export default function ExperienceAdminPage() {
       location: exp.location || "",
       duration: exp.duration,
       description: exp.description.join("\n"),
+      techIds: exp.techIds || [],
       order: exp.order || 0,
     });
     setEditingId(exp.id);
@@ -116,6 +132,7 @@ export default function ExperienceAdminPage() {
         paddingBottom: "80px",
       }}
     >
+      <GlobalAdminStyles />
       {/* Header */}
       <div
         style={{
@@ -278,6 +295,73 @@ export default function ExperienceAdminPage() {
                       setFormData({ ...formData, order: parseInt(v) || 0 })
                     }
                   />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px", minWidth: 0 }}>
+                    <label style={{ fontSize: "14px", color: "#607B96", fontFamily: "monospace" }}>{"// associated technologies"}</label>
+                    <div style={{ 
+                      display: "grid", 
+                      gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", 
+                      gap: "8px",
+                      maxHeight: "180px",
+                      overflowY: "auto",
+                      padding: "12px",
+                      backgroundColor: "rgba(0, 0, 0, 0.2)",
+                      borderRadius: "16px",
+                      border: "1px solid rgba(30, 45, 61, 0.4)",
+                      scrollbarWidth: "thin",
+                      scrollbarColor: "#1E2D3D transparent"
+                    }}>
+                      {techIconsQuery.data?.map((icon) => {
+                        const isSelected = formData.techIds?.includes(icon.id);
+                        return (
+                          <button
+                            key={icon.id}
+                            type="button"
+                            onClick={() => {
+                              const currentIds = formData.techIds || [];
+                              const nextIds = isSelected 
+                                ? currentIds.filter(id => id !== icon.id)
+                                : [...currentIds, icon.id];
+                              setFormData({ ...formData, techIds: nextIds });
+                            }}
+                            style={{
+                              padding: "8px",
+                              backgroundColor: isSelected ? "rgba(254, 165, 95, 0.15)" : "transparent",
+                              border: `1px solid ${isSelected ? "#FEA55F" : "rgba(30, 45, 61, 0.4)"}`,
+                              borderRadius: "10px",
+                              color: isSelected ? "#FFFFFF" : "#607B96",
+                              fontSize: "11px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                              transition: "all 0.2s ease"
+                            }}
+                          >
+                            <span 
+                              className="tech-icon-wrapper"
+                              dangerouslySetInnerHTML={{ __html: icon.icon }} 
+                              style={{ 
+                                width: "18px", 
+                                height: "18px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexShrink: 0,
+                                color: isSelected ? "#FEA55F" : "#607B96"
+                              }} 
+                            />
+                            <span style={{ 
+                              overflow: "hidden", 
+                              textOverflow: "ellipsis", 
+                              whiteSpace: "nowrap" 
+                            }}>
+                              {icon.name}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
 

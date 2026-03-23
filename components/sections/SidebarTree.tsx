@@ -1,8 +1,11 @@
 // components/sections/SidebarTree.tsx
 import React from "react";
+import Link from "next/link";
+import { Plus, Edit3 } from "lucide-react";
 import { SidebarTreeProps } from "@/types/types-about";
 import { FolderRow } from "../rows/FolderRow";
 import { FileRow } from "../rows/FileRow";
+import { formatContentLines } from "@/utils/utils-formatting";
 import styles from "./SidebarTree.module.css";
 import { ResumeButton } from "../buttons/ResumeButton";
 
@@ -16,6 +19,10 @@ const GITHUB_ACTIVITY_ID = "github-activity";
  * - Keyboard navigation support
  * - Accessibility compliant
  */
+interface ExtendedSidebarTreeProps extends SidebarTreeProps {
+  session: any;
+}
+
 export function SidebarTree({
   personalInfo,
   education,
@@ -28,12 +35,30 @@ export function SidebarTree({
   onToggleFolder,
   onOpenFile,
   onSetActiveTab,
-}: SidebarTreeProps) {
+  session,
+}: ExtendedSidebarTreeProps) {
   const sharedRowProps = {
     openTabs,
     activeTab,
     onOpen: onOpenFile,
     onSetActiveTab,
+  };
+
+  const renderAdminActions = (path: string, id?: string) => {
+    if (!session) return null;
+    return (
+      <div 
+        onClick={(e) => e.stopPropagation()} 
+        style={{ display: "flex", gap: "8px", marginLeft: "auto" }}
+      >
+        <Link 
+          href={id ? `/admin/${path}?edit=${id}` : `/admin/${path}?add=true`}
+          style={{ color: "#FEA55F", display: "flex", alignItems: "center" }}
+        >
+          {id ? <Edit3 size={14} /> : <Plus size={14} />}
+        </Link>
+      </div>
+    );
   };
 
   return (
@@ -63,6 +88,7 @@ export function SidebarTree({
         label="professional-experience"
         openFolders={openFolders}
         onToggle={onToggleFolder}
+        adminActions={renderAdminActions("experience")}
       />
       {openFolders["professional-experience"] && (
         <div role="group">
@@ -70,8 +96,9 @@ export function SidebarTree({
             <FileRow
               key={`exp-${exp.id}`}
               id={`exp-${exp.id}`}
-              label={exp.company.toLowerCase().replace(/\s+/g, "-")}
+              label={formatContentLines(exp.company)}
               indent={1}
+              adminActions={renderAdminActions("experience", exp.id)}
               {...sharedRowProps}
             />
           ))}
@@ -91,7 +118,7 @@ export function SidebarTree({
             <FileRow
               key={`edu-${idx}`}
               id={`edu-${idx}`}
-              label={edu.name.toLowerCase().replace(/\s+/g, "-")}
+              label={formatContentLines(edu.name)}
               indent={1}
               {...sharedRowProps}
             />
@@ -112,7 +139,7 @@ export function SidebarTree({
             <FileRow
               key={cert.id}
               id={`cert-${cert.id}`}
-              label={cert.name.toLowerCase().replace(/\s+/g, "-")}
+              label={formatContentLines(cert.name)}
               indent={1}
               {...sharedRowProps}
             />
@@ -126,6 +153,7 @@ export function SidebarTree({
         label="skills"
         openFolders={openFolders}
         onToggle={onToggleFolder}
+        adminActions={renderAdminActions("skills")}
       />
       {openFolders["skills"] && (
         <div role="group">
@@ -133,8 +161,9 @@ export function SidebarTree({
             <FileRow
               key={`skill-${cat.id || idx}`}
               id={`skill-${cat.id || idx}`}
-              label={cat.name.toLowerCase().replace(/\s+/g, "-")}
+              label={formatContentLines(cat.name)}
               indent={1}
+              adminActions={renderAdminActions("skills", cat.id)}
               {...sharedRowProps}
             />
           ))}

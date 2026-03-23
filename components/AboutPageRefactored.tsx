@@ -2,9 +2,12 @@
 
 import React, { useMemo } from "react";
 import Head from "next/head";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useAboutPageState } from "@/hooks/useAboutPageState";
 import { useAboutPageContent } from "@/hooks/useAboutPageContent";
+import { Edit3 } from "lucide-react";
 
 // Components
 import { LayoutDesktop } from "./layout/LayoutDesktop";
@@ -35,6 +38,7 @@ export default function AboutPageContent({
   techIcons,
 }: AboutPageProps) {
   const isMobile = useIsMobile();
+  const { data: session } = useSession();
   
   // State management
   const { openTabs, activeTab, openFolders, actions } = useAboutPageState();
@@ -100,6 +104,58 @@ export default function AboutPageContent({
         />
       </Head>
 
+      {session && (
+        <div style={{
+          position: "fixed",
+          bottom: "20px",
+          right: "20px",
+          zIndex: 1000,
+          display: "flex",
+          gap: "10px"
+        }}>
+          <Link 
+            href="/admin/skills"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              backgroundColor: "rgba(1, 18, 33, 0.9)",
+              border: "1px solid #FEA55F",
+              borderRadius: "12px",
+              padding: "10px 16px",
+              color: "#FEA55F",
+              textDecoration: "none",
+              fontSize: "14px",
+              fontWeight: "bold",
+              backdropFilter: "blur(8px)",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.3)"
+            }}
+          >
+            <Edit3 size={16} /> Manage Skills
+          </Link>
+          <Link 
+            href="/admin/experience"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              backgroundColor: "rgba(1, 18, 33, 0.9)",
+              border: "1px solid #FEA55F",
+              borderRadius: "12px",
+              padding: "10px 16px",
+              color: "#FEA55F",
+              textDecoration: "none",
+              fontSize: "14px",
+              fontWeight: "bold",
+              backdropFilter: "blur(8px)",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.3)"
+            }}
+          >
+            <Edit3 size={16} /> Manage Experience
+          </Link>
+        </div>
+      )}
+
       <LayoutComponent
         personalInfo={personalInfo}
         education={education}
@@ -112,6 +168,7 @@ export default function AboutPageContent({
         activeTab={activeTab}
         openFolders={openFolders}
         actions={actions}
+        session={session}
       />
     </>
   );

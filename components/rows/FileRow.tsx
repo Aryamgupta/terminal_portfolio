@@ -10,6 +10,7 @@ interface FileRowProps {
   onOpen: (id: string) => void;
   onSetActiveTab: (id: string) => void;
   openTabs: string[];
+  adminActions?: React.ReactNode;
 }
 
 /**
@@ -28,6 +29,7 @@ export function FileRow({
   onOpen,
   onSetActiveTab,
   openTabs,
+  adminActions,
 }: FileRowProps) {
   const isActive = activeTab === id;
   const isOpen = openTabs.includes(id);
@@ -60,6 +62,7 @@ export function FileRow({
     >
       <span className={styles.icon}>📄</span>
       <span className={styles.label}>{label}</span>
+      {adminActions && <div className={styles.adminActions}>{adminActions}</div>}
     </div>
   );
 }

@@ -16,6 +16,7 @@ interface LayoutMobileProps extends AboutPageProps {
     setActiveTab: (id: string) => void;
     toggleFolder: (folderId: string) => void;
   };
+  session: any;
 }
 
 /**
@@ -35,6 +36,7 @@ export function LayoutMobile({
   activeTab,
   openFolders,
   actions,
+  session,
 }: LayoutMobileProps) {
   return (
     <div className={styles.layoutContainer}>
@@ -58,6 +60,7 @@ export function LayoutMobile({
           onToggleFolder={actions.toggleFolder}
           onOpenFile={actions.openFile}
           onSetActiveTab={actions.setActiveTab}
+          session={session}
         />
       </nav>
  

@@ -74,7 +74,7 @@
       "institution": "Jingle Bells Public School (Bareilly)",
       "percentage": "93.20%",
       "year": "2018-19",
-      "type": "high-school"
+      "type": "Intermediate"
     },
     {
       "id": "69b5524129196054d0576349",
@@ -82,7 +82,7 @@
       "institution": "JSS Academy of Technical Education (Noida)",
       "percentage": "8.42",
       "year": "2020-24",
-      "type": "university"
+      "type": "University"
     },
     {
       "id": "69bead91d6a9267573ef9bbb",
@@ -90,7 +90,7 @@
       "institution": "Jingle Bells Public School (Bareilly)",
       "percentage": "8.8",
       "year": "2016-17",
-      "type": "university"
+      "type": "high-school"
     }
   ],
   "certificates": [
@@ -557,14 +557,38 @@
       "location": "Delhi",
       "duration": "Feb 2024 - July 2025",
       "description": [
-        "Developed and maintained RadarOps Central, a full-stack system used to manage and process traffic violation data from radar",
-        "monitoring devices.",
+        "Developed and maintained RadarOps Central, a full-stack system used to manage and process traffic violation data from radar monitoring devices.",
         "Built responsive admin dashboards using React.js enabling operators to review, filter, and manage large volumes of violation records.",
         "Designed backend services using Node.js and Express.js for handling device data ingestion, API processing, and system workflows.",
-        "Implemented WebSocket-based communication to enable real-time updates between radar devices and the backend monitoring",
-        "system.",
+        "Implemented WebSocket-based communication to enable real-time updates between radar devices and the backend monitoring system.",
         "Automated challan report generation using Puppeteer,reducing manual operational workload and enabling daily automated reporting.",
         "Managed backend deployment on Linux servers using PM2, ensuring reliable uptime and efficient service management."
+      ],
+      "techIds": [
+        "69beb851d6a9267573ef9bdf",
+        "69beb7b1d6a9267573ef9bdb",
+        "69beb6bcd6a9267573ef9bd5",
+        "69b8fc16c792a8aaf40d3fa2",
+        "69beb317d6a9267573ef9bc2",
+        "69beb373d6a9267573ef9bc3",
+        "69beb3c0d6a9267573ef9bc4",
+        "69beb428d6a9267573ef9bc5",
+        "69beb457d6a9267573ef9bc6",
+        "69beb478d6a9267573ef9bc7",
+        "69beb499d6a9267573ef9bc8",
+        "69beb4d1d6a9267573ef9bca",
+        "69beb51ed6a9267573ef9bcb",
+        "69beb52bd6a9267573ef9bcc",
+        "69beb5b0d6a9267573ef9bcf",
+        "69beb5f1d6a9267573ef9bd0",
+        "69beb674d6a9267573ef9bd2",
+        "69beb67ed6a9267573ef9bd3",
+        "69beb68ad6a9267573ef9bd4",
+        "69beb704d6a9267573ef9bd6",
+        "69beb747d6a9267573ef9bd9",
+        "69beb79cd6a9267573ef9bda",
+        "69beb902d6a9267573ef9be5",
+        "69beb9cbd6a9267573ef9bea"
       ],
       "order": 1
     },
@@ -586,8 +610,9 @@
         "real-time updates in the dashboard.",
         "Built device management modules for onboarding, configuration, and monitoring of multiple devices through a centralized admin panel."
       ],
+      "techIds": [],
       "order": 1
     }
   ],
-  "exportedAt": "2026-03-23T06:12:39.137Z"
+  "exportedAt": "2026-03-23T07:11:41.835Z"
 }

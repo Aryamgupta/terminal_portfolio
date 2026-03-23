@@ -9,6 +9,7 @@ const ExperienceSchema = z.object({
   location: z.string().optional().nullable(),
   duration: z.string(),
   description: z.array(z.string()),
+  techIds: z.array(z.string()).optional(),
   order: z.number().default(0),
 });
 

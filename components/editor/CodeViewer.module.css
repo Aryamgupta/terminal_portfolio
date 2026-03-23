@@ -58,6 +58,35 @@
   justify-content: flex-end;
 }
 
+.techIconInline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 14px;
+  height: 14px;
+  margin: 0 4px;
+  color: var(--color-accent-primary);
+  position: relative;
+  top: -1px;
+}
+
+.techIconInline svg {
+  width: 100% !important;
+  height: 100% !important;
+  fill: currentColor !important;
+}
+
+.techIconInline path {
+  fill: currentColor !important;
+}
+
+.technologiesSection {
+  color: var(--color-accent-primary) !important;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
 .codeContent {
   flex: 1;
   overflow: visible;

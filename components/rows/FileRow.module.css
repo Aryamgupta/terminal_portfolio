@@ -45,6 +45,19 @@
   text-overflow: ellipsis;
 }
 
+.adminActions {
+  margin-left: auto;
+  padding-right: 8px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.fileRow:hover .adminActions {
+  opacity: 1;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .fileRow {

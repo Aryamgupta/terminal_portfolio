@@ -2,6 +2,7 @@
 import { useMemo } from "react";
 import { AboutPageProps } from "@/types/types-about";
 import { formatContentLines } from "@/utils/utils-formatting";
+import { Experience } from "@prisma/client";
 
 interface ContentBlock {
   label: string;
@@ -21,7 +22,8 @@ export function useAboutPageContent(
   education: AboutPageProps["education"],
   certificates: AboutPageProps["certificates"],
   experiences: AboutPageProps["experiences"],
-  skillCategories: AboutPageProps["skillCategories"]
+  skillCategories: AboutPageProps["skillCategories"],
+  techIcons: AboutPageProps["techIcons"]
 ): ContentRecord {
   return useMemo(() => {
     const content: ContentRecord = {
@@ -83,6 +85,7 @@ export function useAboutPageContent(
       };
     });
 
+
     // Add experience blocks
     experiences.forEach((exp) => {
       const key = `exp-${exp.id}`;
@@ -94,6 +97,23 @@ export function useAboutPageContent(
           ` * @role     ${exp.role}`,
           ` * @location ${exp.location || "Remote"}`,
           ` * @duration ${exp.duration}`,
+          " *",
+          " * Technologies:",
+          ...(() => {
+            const ids = (exp as Experience).techIds || [];
+            const chunks: string[][] = [];
+            for (let i = 0; i < ids.length; i += 3) {
+              chunks.push(ids.slice(i, i + 3));
+            }
+            console.log(techIcons)
+            return chunks.map(chunk => {
+              const items = chunk.map(id => {
+                const icon = techIcons.find(t => t.id === id);
+                return `[icon:${id}] ${icon?.name || ""}`;
+              }).join("   ");
+              return ` *   ${items}`;
+            });
+          })(),
           " *",
           " * Key Achievements:",
           ...exp.description.map((line) => ` * • ${line}`),
@@ -124,5 +144,5 @@ export function useAboutPageContent(
     });
 
     return content;
-  }, [personalInfo, education, certificates, experiences, skillCategories]);
+  }, [personalInfo, education, certificates, experiences, skillCategories, techIcons]);
 }

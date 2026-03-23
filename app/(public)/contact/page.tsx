@@ -494,7 +494,6 @@ export default function ContactPage() {
   );
 }
 
-/* Simple syntax highlighter for the live code preview */
 function CodeLine({
   line,
   formData,

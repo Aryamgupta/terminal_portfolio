@@ -138,5 +138,6 @@ model Experience {
   location    String?
   duration    String   // e.g., "Jan 2023 - Present"
   description String[] // Bullet points for experience details
+  techIds     String[] @db.ObjectId
   order       Int      @default(0)
 }

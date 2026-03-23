@@ -47,6 +47,19 @@
   letter-spacing: 0.5px;
 }
 
+.adminActions {
+  margin-left: auto;
+  padding-right: 8px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.folderRow:hover .adminActions {
+  opacity: 1;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .folderRow {
