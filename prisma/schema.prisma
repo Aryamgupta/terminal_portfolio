@@ -20,6 +20,7 @@ model PersonalInfo {
   twitterLink  String?
   resumeLink   String?
   interests    String[] // Stored as lines for editor view
+  faviconId    String?  @db.ObjectId
 }
 
 model Project {
@@ -148,4 +149,13 @@ model SocialLinks{
   platform String
   url String
   iconId String?
+}
+
+model CustomIcon {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  svg       String
+  category  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Project } from "@prisma/client";
 
 function slugify(title: string) {
@@ -16,6 +17,7 @@ export default function ProjectCard({
   count: number;
   techIconMap: Record<string, string>;
 }) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const slug = slugify(project.title);
   const techIds = (project as Project & { techIds?: string[] }).techIds || [];
   const techStack = project.techStack || [];
@@ -140,7 +142,7 @@ export default function ProjectCard({
           <span style={{ color: "#607B96" }}>_{slug}</span>
         </p>
 
-        <p
+        <div
           style={{
             margin: 0,
             color: "#607B96",
@@ -148,10 +150,35 @@ export default function ProjectCard({
             fontFamily: "'Fira Code', monospace",
             lineHeight: "1.7",
             flex: 1,
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          {project.description}
-        </p>
+          <p style={{ margin: 0 }}>
+            {isExpanded || project.description.length <= 160
+              ? project.description
+              : `${project.description.substring(0, 160)}...`}
+          </p>
+          {project.description.length > 160 && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#43D9AD",
+                padding: 0,
+                marginTop: "4px",
+                cursor: "pointer",
+                fontFamily: "'Fira Code', monospace",
+                fontSize: "11px",
+                textAlign: "left",
+                width: "fit-content"
+              }}
+            >
+              {isExpanded ? "// read-less" : "// read-more"}
+            </button>
+          )}
+        </div>
 
         {project.link && (
           <a

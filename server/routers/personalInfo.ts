@@ -14,6 +14,7 @@ const PersonalInfoSchema = z.object({
   twitterLink: z.string().optional().nullable(),
   resumeLink: z.string().optional().nullable(),
   interests: z.array(z.string()),
+  faviconId: z.string().optional().nullable(),
 });
 
 export const personalInfoRouter = router({
@@ -33,6 +34,28 @@ export const personalInfoRouter = router({
       } else {
         return await prisma.personalInfo.create({
           data: input,
+        });
+      }
+    }),
+  updateFavicon: protectedProcedure
+    .input(z.string().nullable())
+    .mutation(async ({ input }) => {
+      const existing = await prisma.personalInfo.findFirst();
+      if (existing) {
+        return await prisma.personalInfo.update({
+          where: { id: existing.id },
+          data: { faviconId: input },
+        });
+      } else {
+        // Fallback: create with minimal info if it doesn't exist
+        return await prisma.personalInfo.create({
+          data: { 
+            name: "Aryam Gupta",
+            role: [],
+            bio: [],
+            interests: [],
+            faviconId: input 
+          },
         });
       }
     }),

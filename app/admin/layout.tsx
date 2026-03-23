@@ -21,6 +21,7 @@ import {
   Cpu,
   Briefcase,
   LucideProps,
+  Image,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -383,6 +384,12 @@ export default function AdminLayout({
       label: "TechIcons",
       icon: Cpu,
       href: "/admin/tech-icons",
+    },
+    {
+      id: "icons",
+      label: "Icons",
+      icon: Image,
+      href: "/admin/icons",
     },
     {
       id: "messages",

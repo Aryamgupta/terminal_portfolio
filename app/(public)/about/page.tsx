@@ -10,7 +10,7 @@ import {
 } from "@prisma/client";
 import { kv } from "@vercel/kv";
 
-type KVResponse<T> = {
+export type KVResponse<T> = {
   data: T;
   exportedAt: string;
 };

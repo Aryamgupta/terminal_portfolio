@@ -1,12 +1,30 @@
 import "./globals.css";
 import React from "react";
-
-export const metadata = {
-  title: "Aryam Gupta | Developer Portfolio",
-  description: "Full Stack Developer | Next.js, React, TypeScript",
-};
-
 import { Providers } from "./providers";
+import { KVResponse } from "./(public)/about/page";
+import { PersonalInfo } from "@prisma/client";
+import { kv } from "@vercel/kv";
+
+export async function generateMetadata() {
+  const personalInfoData = await kv.get("personal-info");
+  const personalInfo =
+    (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
+  const faviconUrl = personalInfo?.faviconId
+    ? `/api/icon/${personalInfo.faviconId}`
+    : "/favicon.ico";
+
+  return {
+    title: personalInfo?.name
+      ? `${personalInfo.name} | Developer Portfolio`
+      : "Aryam Gupta | Developer Portfolio",
+    description:
+      personalInfo?.bio?.[0] ||
+      "Full Stack Developer | Next.js, React, TypeScript",
+    icons: {
+      icon: faviconUrl,
+    },
+  };
+}
 
 export default function RootLayout({
   children,
@@ -16,9 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
 
         <style>{`
           body {

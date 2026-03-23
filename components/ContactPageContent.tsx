@@ -529,7 +529,6 @@ export default function ContactPageContent({
                 id="c-name"
                 type="text"
                 required
-                placeholder="Jonathan Davis"
                 value={form.name}
                 onChange={(e) => update("name", e.target.value)}
                 style={inputStyle}

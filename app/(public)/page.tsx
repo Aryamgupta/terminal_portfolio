@@ -1,25 +1,22 @@
-import fs from "fs";
-import path from "path";
 import SnakeGame from "@/components/SnakeGame";
 import TypeWritterRole from "@/components/TypeWritterRole";
+import { PersonalInfo } from "@prisma/client";
+import { kv } from "@vercel/kv";
+import { KVResponse } from "./about/page";
 
 async function getHomeData() {
-  const dataPath = path.join(process.cwd(), "public/data/personal-info.json");
-  if (!fs.existsSync(dataPath)) return { name: "Aryam Gupta", role: "Front-end developer", githubLink: "https://github.com/aryam-gupta" };
-  
-  const jsonData = fs.readFileSync(dataPath, "utf8");
-  const { data: personalInfo } = JSON.parse(jsonData);
-
+  const personalInfoData = await kv.get("personal-info");
+  const personalInfo =
+    (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
   return {
     name: personalInfo?.name || "Aryam Gupta",
-    role: personalInfo?.role || "Front-end developer",
+    role: personalInfo?.role || ["Front-end developer"],
     githubLink: personalInfo?.githubLink || "https://github.com/aryam-gupta",
   };
 }
 
 export default async function HomePage() {
   const { name, role, githubLink } = await getHomeData();
-
 
   return (
     <div
