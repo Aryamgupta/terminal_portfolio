@@ -594,7 +594,7 @@ export default function AdminLayout({
             }}
           >
             <div
-            className="sidebar-user"
+              className="sidebar-user"
               style={{
                 display: "none",
                 flexDirection: "column",

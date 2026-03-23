@@ -1,55 +1,63 @@
-import fs from "fs";
-import path from "path";
 import AboutPageContent from "@/components/AboutPageRefactored";
 import { AboutPageProps } from "@/types/types-about";
 import {
+  Certificate,
   Education,
   Experience,
   PersonalInfo,
   SkillCategory,
   TechIcon,
 } from "@prisma/client";
-import { Certificate } from "crypto";
+import { kv } from "@vercel/kv";
+
+type KVResponse<T> = {
+  data: T;
+  exportedAt: string;
+};
 
 async function getAboutData() {
-  const dataDir = path.join(process.cwd(), "public/data");
+  const [
+    personalInfoData,
+    educationData,
+    certificatesData,
+    skillsData,
+    experienceData,
+  ] = await Promise.all([
+    kv.get("personal-info"),
+    kv.get("education"),
+    kv.get("certificates"),
+    kv.get("skills"),
+    kv.get("experience"),
+  ]);
 
-  const readFile = (name: string, fallback: Record<string, unknown>) => {
-    const filePath = path.join(dataDir, `${name}.json`);
-    if (!fs.existsSync(filePath)) return fallback;
-    try {
-      return JSON.parse(fs.readFileSync(filePath, "utf8"));
-    } catch {
-      return fallback;
-    }
-  };
+  const personalInfo =
+    (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
 
-  const personalInfo = (
-    readFile("personal-info", { data: null }) as { data: PersonalInfo }
-  ).data;
-  const education = (
-    readFile("education", { data: [] }) as { data: Education[] }
-  ).data;
-  const certificates = (
-    readFile("certificates", { data: [] }) as { data: Certificate[] }
-  ).data;
-  const skills = readFile("skills", { categories: [], icons: [] }) as {
-    categories: SkillCategory[];
-    icons: TechIcon[];
-  };
-  const experiences = (
-    readFile("experience", { data: [] }) as { data: Experience[] }
-  ).data;
+  const education = (educationData as KVResponse<Education[]>)?.data || [];
+
+  const certificates =
+    (certificatesData as KVResponse<Certificate[]>)?.data || [];
+
+  const skills = (
+    skillsData as KVResponse<{
+      categories: SkillCategory[];
+      icons: TechIcon[];
+    }>
+  )?.data || { categories: [], icons: [] };
+
+  const experiences = (experienceData as KVResponse<Experience[]>)?.data || [];
 
   return {
-    personalInfo: personalInfo,
-    education: education,
-    certificates: certificates,
+    personalInfo,
+    education,
+    certificates,
     skillCategories: skills.categories,
-    experiences: experiences,
     techIcons: skills.icons,
+    experiences,
   };
 }
+
+export const revalidate = 5000;
 
 export default async function AboutPage() {
   const data = await getAboutData();

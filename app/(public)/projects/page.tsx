@@ -1,21 +1,31 @@
-import fs from "fs";
-import path from "path";
 import ProjectsContent from "@/components/ProjectsContent";
+import { Project, SkillCategory, TechIcon } from "@prisma/client";
+import { kv } from "@vercel/kv";
+
+type KVResponse<T> = {
+  data: T;
+  exportedAt: string;
+};
 
 async function getProjectsData() {
-  const projectsPath = path.join(process.cwd(), "public/data/projects.json");
-  const skillsPath = path.join(process.cwd(), "public/data/skills.json");
-  
-  const projectsJson = fs.existsSync(projectsPath) ? fs.readFileSync(projectsPath, "utf8") : '{"data":[]}';
-  const skillsJson = fs.existsSync(skillsPath) ? fs.readFileSync(skillsPath, "utf8") : '{"categories":[],"icons":[]}';
+  const [projectsData, skillsData] = await Promise.all([
+    kv.get("projects"),
+    kv.get("skills"),
+  ]);
 
-  const { data: projects } = JSON.parse(projectsJson);
-  const { categories: skillCategories, icons: techIcons } = JSON.parse(skillsJson);
+  const projects = (projectsData as KVResponse<Project[]>)?.data || [];
+
+  const skills = (
+    skillsData as KVResponse<{
+      categories: SkillCategory[];
+      icons: TechIcon[];
+    }>
+  )?.data || { categories: [], icons: [] };
 
   return {
-    projects: projects || [],
-    techIcons: techIcons || [],
-    skillCategories: skillCategories || [],
+    projects,
+    techIcons: skills.icons,
+    skillCategories: skills.categories,
   };
 }
 

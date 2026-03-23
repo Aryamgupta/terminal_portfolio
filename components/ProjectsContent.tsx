@@ -2,14 +2,14 @@
 
 import React, { useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { Project } from "@prisma/client";
+import { Project, SkillCategory, TechIcon } from "@prisma/client";
 import ProjectCard from "./cards/ProjectCard";
 
 
 interface Props {
   projects: Project[];
-  techIcons: Array<{ id:string,name: string; icon: string }>;
-  skillCategories: Array<{ name: string; skills: { name: string; iconId: string }[] }>;
+  techIcons: TechIcon[];
+  skillCategories: SkillCategory[];
 }
 
 export default function ProjectsContent({

@@ -141,3 +141,10 @@ model Experience {
   techIds     String[] @db.ObjectId
   order       Int      @default(0)
 }
+
+model SocialLinks{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  platform String
+  url String
+  iconId String?
+}

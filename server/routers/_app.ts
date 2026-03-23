@@ -11,6 +11,7 @@ import { authRouter } from "./auth";
 import { messageRouter } from "./message";
 import { systemRouter } from "./system";
 import { experienceRouter } from "./experience";
+import { socialLinksRouter } from "./socialLinks";
 
 export const appRouter = router({
   project: projectRouter,
@@ -25,6 +26,7 @@ export const appRouter = router({
   message: messageRouter,
   system: systemRouter,
   experience: experienceRouter,
+  socialLinks:socialLinksRouter
 });
 
 export type AppRouter = typeof appRouter;
