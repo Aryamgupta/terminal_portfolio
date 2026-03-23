@@ -129,9 +129,7 @@ export function useAboutPageContent(
           " * Technical Skills Matrix:",
           ...cat.skills.map((s) => {
             const name = typeof s === "string" ? s : s.name;
-            const iconId =
-              typeof s === "object" && s !== null ? s.iconId : null;
-            return ` * • ${name}${iconId ? ` [icon:${iconId}]` : ""}`;
+            return ` * - ${name}`;
           }),
           " */",
         ],

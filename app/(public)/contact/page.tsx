@@ -23,7 +23,6 @@ async function getContactData() {
   };
 }
 
-export const revalidate = 5000;
 
 export default async function ContactPage() {
   const data = await getContactData();

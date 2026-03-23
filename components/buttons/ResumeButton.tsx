@@ -3,15 +3,18 @@ import React from "react";
 import styles from "./ResumeButton.module.css";
 
 interface ResumeButtonProps {
+  name?: string;
   resumeLink?: string;
 }
 
-export function ResumeButton({ resumeLink }: ResumeButtonProps) {
+export function ResumeButton({ name, resumeLink }: ResumeButtonProps) {
   if (!resumeLink) return null;
 
   const handleDownload = async () => {
     try {
       const res = await fetch(resumeLink);
+
+      console.log({ resumeLink });
 
       if (!res.ok) throw new Error("Failed to fetch file");
 
@@ -21,7 +24,7 @@ export function ResumeButton({ resumeLink }: ResumeButtonProps) {
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = "resume.pdf"; // file name
+      a.download = `${name ? `${name.split(" ").join("_")}_` : ""}Resume.pdf`; // file name
       document.body.appendChild(a);
       a.click();
 

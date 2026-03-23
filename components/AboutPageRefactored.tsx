@@ -2,12 +2,9 @@
 
 import React, { useMemo } from "react";
 import Head from "next/head";
-import Link from "next/link";
-import { useSession } from "next-auth/react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useAboutPageState } from "@/hooks/useAboutPageState";
 import { useAboutPageContent } from "@/hooks/useAboutPageContent";
-import { Edit3 } from "lucide-react";
 
 // Components
 import { LayoutDesktop } from "./layout/LayoutDesktop";
@@ -38,7 +35,6 @@ export default function AboutPageContent({
   techIcons,
 }: AboutPageProps) {
   const isMobile = useIsMobile();
-  const { data: session } = useSession();
   
   // State management
   const { openTabs, activeTab, openFolders, actions } = useAboutPageState();

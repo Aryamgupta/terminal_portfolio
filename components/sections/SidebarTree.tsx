@@ -82,6 +82,29 @@ export function SidebarTree({
         </div>
       )}
 
+
+      {/* Skills Section */}
+      <FolderRow
+        id="skills"
+        label="skills"
+        openFolders={openFolders}
+        onToggle={onToggleFolder}
+      />
+      {openFolders["skills"] && (
+        <div role="group">
+          {skillCategories.map((cat, idx) => (
+            <FileRow
+              key={`skill-${cat.id || idx}`}
+              id={`skill-${cat.id || idx}`}
+              label={formatContentLines(cat.name)}
+              indent={1}
+              {...sharedRowProps}
+            />
+          ))}
+        </div>
+      )}
+
+
       {/* Education Section */}
       <FolderRow
         id="education"
@@ -124,35 +147,15 @@ export function SidebarTree({
         </div>
       )}
 
-      {/* Skills Section */}
-      <FolderRow
-        id="skills"
-        label="skills"
-        openFolders={openFolders}
-        onToggle={onToggleFolder}
-      />
-      {openFolders["skills"] && (
-        <div role="group">
-          {skillCategories.map((cat, idx) => (
-            <FileRow
-              key={`skill-${cat.id || idx}`}
-              id={`skill-${cat.id || idx}`}
-              label={formatContentLines(cat.name)}
-              indent={1}
-              {...sharedRowProps}
-            />
-          ))}
-        </div>
-      )}
-
       {/* GitHub Activity */}
       <FileRow
         id={GITHUB_ACTIVITY_ID}
-        label="🐙 github-activity"
+        label="github-activity"
         indent={0}
         {...sharedRowProps}
       />
-      {personalInfo?.resumeLink && <ResumeButton resumeLink={personalInfo.resumeLink} />}
+  
+      {personalInfo?.resumeLink && <ResumeButton name={personalInfo.name} resumeLink={personalInfo.resumeLink} />}
     </div>
   );
 }

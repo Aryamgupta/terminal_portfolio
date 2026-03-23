@@ -5,21 +5,30 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 import { trpc } from "@/utils/trpc";
 import { ContactPageProps } from "@/types/types-contact";
 import CodeLine from "./UI/MessgeSnippet";
+import MailIcon from "./icons/MailIcon";
+import PhoneIcon from "./icons/PhoneIcon";
+import SocialLink from "./icons/SocialLinkIcon";
 
-export default function ContactPageContent({ personalInfo, socialLinks }: ContactPageProps) {
+export default function ContactPageContent({
+  personalInfo,
+  socialLinks,
+}: ContactPageProps) {
   const isMobile = useIsMobile();
-  const [sidebarOpen, setSidebarOpen] = useState<Record<string, boolean>>({ contacts: true, socials: false });
+  const [sidebarOpen, setSidebarOpen] = useState<Record<string, boolean>>({
+    contacts: true,
+    socials: false,
+  });
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
-  
+
   const sendMutation = trpc.message.send.useMutation({
     onSuccess: () => {
       setSubmitted(true);
     },
   });
 
-
-  const toggleSection = (k: string) => setSidebarOpen((p) => ({ ...p, [k]: !p[k] }));
+  const toggleSection = (k: string) =>
+    setSidebarOpen((p) => ({ ...p, [k]: !p[k] }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,8 +64,8 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
     display: "block",
   };
 
-  const email = personalInfo?.email || "aryamgupta8750@gmail.com";
-  const phone = personalInfo?.phone || "+91 8750XXXXXX";
+  const email = personalInfo?.email || "[EMAIL_ADDRESS]";
+  const phone = personalInfo?.phone || "[PHONE NUMBER]";
 
   /* ── Live code lines ─────────────────────────────────────────── */
   const codeLines = [
@@ -139,49 +148,193 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
   /* ── MOBILE layout ─────────────────────────────────────── */
   if (isMobile) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", minHeight: "100%", background: "#011627" }}>
-        <div style={{ padding: "14px 16px", color: "#FFFFFF", fontSize: "14px", fontFamily: "'Fira Code', monospace" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100%",
+          background: "#011627",
+        }}
+      >
+        <div
+          style={{
+            padding: "14px 16px",
+            color: "#FFFFFF",
+            fontSize: "14px",
+            fontFamily: "'Fira Code', monospace",
+          }}
+        >
           _contact-me
         </div>
 
         {/* Contacts accordion */}
-        <div style={{ background: "#011221", borderBottom: "1px solid #1E2D3D" }}>
-          <button onClick={() => toggleSection("contacts")} style={{ width: "100%", display: "flex", alignItems: "center", gap: "8px", padding: "12px 16px", background: "#1E2D3D", border: "none", color: "#FFFFFF", cursor: "pointer", fontFamily: "'Fira Code', monospace", fontSize: "13px" }}>
-            <span style={{ fontSize: "9px", color: "#FFFFFF" }}>{sidebarOpen.contacts ? "▼" : "▶"}</span> contacts
+        <div
+          style={{ background: "#011221", borderBottom: "1px solid #1E2D3D" }}
+        >
+          <button
+            onClick={() => toggleSection("contacts")}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "12px 16px",
+              background: "#1E2D3D",
+              border: "none",
+              color: "#FFFFFF",
+              cursor: "pointer",
+              fontFamily: "'Fira Code', monospace",
+              fontSize: "13px",
+            }}
+          >
+            <span style={{ fontSize: "9px", color: "#FFFFFF" }}>
+              {sidebarOpen.contacts ? "▼" : "▶"}
+            </span>{" "}
+            contacts
           </button>
           {sidebarOpen.contacts && (
             <div style={{ padding: "8px 0 12px" }}>
-              <a href={`mailto:${email}`} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 20px", color: "#607B96", fontSize: "12px", fontFamily: "'Fira Code', monospace", textDecoration: "none" }}>✉ {email}</a>
-              <a href={`tel:${phone.replace(/\s/g, "")}`} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 20px", color: "#607B96", fontSize: "12px", fontFamily: "'Fira Code', monospace", textDecoration: "none" }}>📞 {phone}</a>
+              <a
+                href={`mailto:${email}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "7px 20px",
+                  color: "#607B96",
+                  fontSize: "12px",
+                  fontFamily: "'Fira Code', monospace",
+                  textDecoration: "none",
+                }}
+              >
+                <MailIcon /> {email}
+              </a>
+              <a
+                href={`tel:${phone.replace(/\s/g, "")}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "7px 20px",
+                  color: "#607B96",
+                  fontSize: "12px",
+                  fontFamily: "'Fira Code', monospace",
+                  textDecoration: "none",
+                }}
+              >
+                {phone}
+              </a>
             </div>
           )}
-          <button onClick={() => toggleSection("socials")} style={{ width: "100%", display: "flex", alignItems: "center", gap: "8px", padding: "12px 16px", background: "#1E2D3D", border: "none", borderTop: "1px solid #01080E", color: "#FFFFFF", cursor: "pointer", fontFamily: "'Fira Code', monospace", fontSize: "13px" }}>
-            <span style={{ fontSize: "9px", color: "#FFFFFF" }}>{sidebarOpen.socials ? "▼" : "▶"}</span> find-me-also-in
+          <button
+            onClick={() => toggleSection("socials")}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "12px 16px",
+              background: "#1E2D3D",
+              border: "none",
+              borderTop: "1px solid #01080E",
+              color: "#FFFFFF",
+              cursor: "pointer",
+              fontFamily: "'Fira Code', monospace",
+              fontSize: "13px",
+            }}
+          >
+            <span style={{ fontSize: "9px", color: "#FFFFFF" }}>
+              {sidebarOpen.socials ? "▼" : "▶"}
+            </span>{" "}
+            find-me-also-in
           </button>
           {sidebarOpen.socials && (
             <div style={{ padding: "8px 0 12px" }}>
               {socialLinks.map((s) => (
-                <a key={s.id} href={s.url} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 20px", color: "#607B96", fontSize: "12px", fontFamily: "'Fira Code', monospace", textDecoration: "none" }}>⌥ {s.platform}</a>
+                <a
+                  key={s.id}
+                  href={s.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "7px 20px",
+                    color: "#607B96",
+                    fontSize: "12px",
+                    fontFamily: "'Fira Code', monospace",
+                    textDecoration: "none",
+                  }}
+                >
+                  ⌥ {s.platform}
+                </a>
               ))}
             </div>
           )}
         </div>
 
         {/* Form Breadcrumb */}
-        <div style={{ padding: "14px 16px", color: "#FFFFFF", fontSize: "14px", fontFamily: "'Fira Code', monospace" }}>
-           {"// contact "}
-           <span style={{ color: "#607B96" }}>
-             / contact-form
-           </span>
+        <div
+          style={{
+            padding: "14px 16px",
+            color: "#FFFFFF",
+            fontSize: "14px",
+            fontFamily: "'Fira Code', monospace",
+          }}
+        >
+          {"// contact "}
+          <span style={{ color: "#607B96" }}>/ contact-form</span>
         </div>
 
         {/* Form */}
         <main style={{ flex: 1, padding: "0 16px 40px", overflowY: "auto" }}>
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            <div><label style={labelStyle}>_name:</label><input value={form.name} onChange={(e) => update("name", e.target.value)} style={inputStyle} placeholder="Jonathan Davis" /></div>
-            <div><label style={labelStyle}>_email:</label><input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} style={inputStyle} /></div>
-            <div><label style={labelStyle}>_message:</label><textarea value={form.message} onChange={(e) => update("message", e.target.value)} rows={6} style={{ ...inputStyle, resize: "vertical" }} /></div>
-            <button type="submit" style={{ padding: "10px 20px", background: "#1E2D3D", border: "1px solid #1E2D3D", borderRadius: "8px", color: "#FFFFFF", fontFamily: "'Fira Code', monospace", fontSize: "13px", cursor: "pointer", alignSelf: "flex-start" }}>submit-message</button>
+          <form
+            onSubmit={handleSubmit}
+            style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+          >
+            <div>
+              <label style={labelStyle}>_name:</label>
+              <input
+                value={form.name}
+                onChange={(e) => update("name", e.target.value)}
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>_email:</label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => update("email", e.target.value)}
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>_message:</label>
+              <textarea
+                value={form.message}
+                onChange={(e) => update("message", e.target.value)}
+                rows={6}
+                style={{ ...inputStyle, resize: "vertical" }}
+              />
+            </div>
+            <button
+              type="submit"
+              style={{
+                padding: "10px 20px",
+                background: "#1E2D3D",
+                border: "1px solid #1E2D3D",
+                borderRadius: "8px",
+                color: "#FFFFFF",
+                fontFamily: "'Fira Code', monospace",
+                fontSize: "13px",
+                cursor: "pointer",
+                alignSelf: "flex-start",
+              }}
+            >
+              submit-message
+            </button>
           </form>
         </main>
       </div>
@@ -238,7 +391,7 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
               ((e.currentTarget as HTMLElement).style.color = "#607B96")
             }
           >
-            <span>✉</span> {email}
+            <MailIcon /> {email}
           </a>
           <a
             href={`tel:${phone.replace(/\s/g, "")}`}
@@ -260,7 +413,7 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
               ((e.currentTarget as HTMLElement).style.color = "#607B96")
             }
           >
-            <span>📞</span> {phone}
+            <PhoneIcon /> {phone}
           </a>
         </div>
 
@@ -307,7 +460,7 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
                 ((e.currentTarget as HTMLElement).style.color = "#607B96")
               }
             >
-              <span style={{ fontSize: "10px" }}>🔗</span>
+              <SocialLink/>
               {s.platform}
             </a>
           ))}
@@ -315,7 +468,14 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
       </aside>
 
       {/* ── Center: tab + form ───────────────────────────────────── */}
-      <main style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <main
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}
+      >
         {/* Tab bar */}
         <div
           style={{
@@ -354,7 +514,12 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
         <div style={{ flex: 1, overflowY: "auto", padding: "36px 40px" }}>
           <form
             onSubmit={handleSubmit}
-            style={{ display: "flex", flexDirection: "column", gap: "20px", maxWidth: "400px" }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+              maxWidth: "400px",
+            }}
           >
             <div>
               <label htmlFor="c-name" style={labelStyle}>
@@ -369,10 +534,12 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
                 onChange={(e) => update("name", e.target.value)}
                 style={inputStyle}
                 onFocus={(e) =>
-                  ((e.currentTarget as HTMLElement).style.borderColor = "#607B96")
+                  ((e.currentTarget as HTMLElement).style.borderColor =
+                    "#607B96")
                 }
                 onBlur={(e) =>
-                  ((e.currentTarget as HTMLElement).style.borderColor = "#1E2D3D")
+                  ((e.currentTarget as HTMLElement).style.borderColor =
+                    "#1E2D3D")
                 }
               />
             </div>
@@ -389,10 +556,12 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
                 onChange={(e) => update("email", e.target.value)}
                 style={inputStyle}
                 onFocus={(e) =>
-                  ((e.currentTarget as HTMLElement).style.borderColor = "#607B96")
+                  ((e.currentTarget as HTMLElement).style.borderColor =
+                    "#607B96")
                 }
                 onBlur={(e) =>
-                  ((e.currentTarget as HTMLElement).style.borderColor = "#1E2D3D")
+                  ((e.currentTarget as HTMLElement).style.borderColor =
+                    "#1E2D3D")
                 }
               />
             </div>
@@ -409,10 +578,12 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
                 onChange={(e) => update("message", e.target.value)}
                 style={{ ...inputStyle, resize: "none" }}
                 onFocus={(e) =>
-                  ((e.currentTarget as HTMLElement).style.borderColor = "#607B96")
+                  ((e.currentTarget as HTMLElement).style.borderColor =
+                    "#607B96")
                 }
                 onBlur={(e) =>
-                  ((e.currentTarget as HTMLElement).style.borderColor = "#1E2D3D")
+                  ((e.currentTarget as HTMLElement).style.borderColor =
+                    "#1E2D3D")
                 }
               />
             </div>
@@ -440,7 +611,9 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
               }}
               onMouseOut={(e) => {
                 const el = e.currentTarget as HTMLElement;
-                el.style.borderColor = sendMutation.isPending ? "#2B3D4F" : "#1E2D3D";
+                el.style.borderColor = sendMutation.isPending
+                  ? "#2B3D4F"
+                  : "#1E2D3D";
                 el.style.color = sendMutation.isPending ? "#607B96" : "#FFFFFF";
               }}
             >
@@ -453,7 +626,7 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
       {/* ── Right: reactive line-numbered code preview ────────────── */}
       <aside
         style={{
-          width: "340px",
+          width: "440px",
           flexShrink: 0,
           borderLeft: "1px solid #1E2D3D",
           background: "#011627",
@@ -464,10 +637,7 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
         {/* Code view */}
         <div style={{ padding: "24px 0 24px 0", overflowX: "auto" }}>
           {codeLines.map((line, i) => (
-            <div
-              key={i}
-              style={{ display: "flex", alignItems: "flex-start" }}
-            >
+            <div key={i} style={{ display: "flex", alignItems: "flex-start" }}>
               {/* Line number */}
               <span
                 style={{
@@ -492,4 +662,3 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
     </div>
   );
 }
-
