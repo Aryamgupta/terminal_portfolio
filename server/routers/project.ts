@@ -12,6 +12,7 @@ const ProjectSchema = z.object({
   date: z.string().optional().nullable(),
   featured: z.boolean().default(false),
   order: z.number().default(0),
+  techIds: z.array(z.string()).optional(),
 });
 
 export const projectRouter = router({

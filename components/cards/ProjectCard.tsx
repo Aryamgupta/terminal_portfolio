@@ -16,20 +16,22 @@ export default function ProjectCard({
   count: number;
   techIconMap: Record<string, string>;
 }) {
-  const tech = Array.isArray(project.techStack) ? project.techStack[0] : null;
   const slug = slugify(project.title);
+  const techIds = (project as Project & { techIds?: string[] }).techIds || [];
+  const techStack = project.techStack || [];
 
-  const renderCardTechIcon = (icon: string | null) => {
-    if (!icon) return null;
+  const renderCardTechIcon = (iconId: string, iconMap: Record<string, string>) => {
+    const icon = iconMap[iconId];
+    if (!icon) return <span style={{ fontSize: "12px" }}>◆</span>;
     if (icon.trim().startsWith("<svg")) {
       return (
         <span
-          className="inline-flex items-center justify-center w-4 h-4 [&>svg]:w-full [&>svg]:h-full"
+          className="inline-flex items-center justify-center w-3 h-3 [&>svg]:w-full [&>svg]:h-full"
           dangerouslySetInnerHTML={{ __html: icon }}
         />
       );
     }
-    return <span>{icon}</span>;
+    return <span style={{ fontSize: "10px" }}>{icon}</span>;
   };
 
   return (
@@ -67,27 +69,51 @@ export default function ProjectCard({
         {!project.imageLink && (
           <span style={{ color: "#1E2D3D", fontSize: "36px" }}>{"</>"}</span>
         )}
-        {tech && (
-          <div
-            style={{
-              position: "absolute",
-              top: "10px",
-              right: "10px",
-              width: "28px",
-              height: "28px",
-              background: "rgba(1,22,39,0.85)",
-              border: "1px solid #1E2D3D",
-              borderRadius: "6px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "14px",
-              backdropFilter: "blur(4px)",
-            }}
-          >
-            {renderCardTechIcon(tech ? (techIconMap[tech] ?? "◆") : null)}
-          </div>
-        )}
+        {/* Tech Icons Overlay - Top Right */}
+        <div style={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          display: "flex",
+          gap: "4px",
+          flexWrap: "wrap",
+          justifyContent: "flex-end",
+          maxWidth: "70%"
+        }}>
+          {techIds.length > 0 ? (
+            techIds.map((id: string) => (
+              <div key={id} style={{
+                width: "24px",
+                height: "24px",
+                background: "rgba(1,22,39,0.85)",
+                border: "1px solid #1E2D3D",
+                borderRadius: "5px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backdropFilter: "blur(4px)",
+                color: "#607B96"
+              }}>
+                {renderCardTechIcon(id, techIconMap)}
+              </div>
+            ))
+          ) : (
+            techStack.slice(0, 3).map((t: string, i: number) => (
+               <div key={i} style={{
+                padding: "2px 6px",
+                background: "rgba(1,22,39,0.85)",
+                border: "1px solid #1E2D3D",
+                borderRadius: "4px",
+                fontSize: "9px",
+                color: "#43D9AD",
+                fontFamily: "'Fira Code', monospace",
+                backdropFilter: "blur(4px)",
+              }}>
+                {t}
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       <div

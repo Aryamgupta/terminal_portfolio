@@ -59,9 +59,9 @@ export default function ProjectsContent({
     );
   };
 
-  // Flatten all skills for filters or use skillCategories
+  // Flatten all skills for filters and ensure uniqueness by name
   const allFilters = skillCategories.flatMap((sc) => sc.skills);
-  const uniqueFilters = Array.from(new Set(allFilters));
+  const uniqueFilters = Array.from(new Map(allFilters.map(f => [f.name, f])).values());
 
   const toggleFilter = (f: string) =>
     setSelected((prev) => {
@@ -75,9 +75,18 @@ export default function ProjectsContent({
     selected.size === 0
       ? projects
       : projects.filter(
-          (p) =>
-            Array.isArray(p.techStack) &&
-            p.techStack.some((t) => selected.has(t)),
+          (p) => {
+            const project = p as Project & { techIds?: string[] };
+            const hasTechInStack = Array.isArray(project.techStack) &&
+              project.techStack.some((t) => selected.has(t));
+            
+            const hasTechInIds = project.techIds?.some((id: string) => {
+              const icon = techIcons.find(ti => ti.id === id);
+              return icon && selected.has(icon.name);
+            });
+
+            return hasTechInStack || hasTechInIds;
+          }
         );
 
   const grid = (

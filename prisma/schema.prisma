@@ -32,6 +32,7 @@ model Project {
   date        String?
   featured    Boolean  @default(false)
   order       Int      @default(0)
+  techIds     String[] @db.ObjectId
 }
 
 model Education {

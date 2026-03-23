@@ -19,6 +19,20 @@ import Button from "@/components/UI/Button";
 import InputField from "@/components/UI/InputField";
 import TextAreaField from "@/components/UI/TextAreaField";
 import { motion, AnimatePresence } from "framer-motion";
+import { Project } from "@prisma/client";
+
+const GlobalAdminStyles = () => (
+  <style jsx global>{`
+    .tech-icon-wrapper svg {
+      width: 100% !important;
+      height: 100% !important;
+      fill: currentColor !important;
+    }
+    .tech-icon-wrapper path {
+      fill: currentColor !important;
+    }
+  `}</style>
+);
 
 const SyncModuleButton = ({ module }: { module: string }) => {
   const syncMutation = trpc.system.generateModuleJson.useMutation();
@@ -51,14 +65,15 @@ export default function ProjectsAdminPage() {
     title: "",
     description: "",
     imageLink: "",
-    techStack: "",
     link: "",
     date: "",
     featured: false,
     order: 0,
+    techIds: [] as string[],
   });
 
   const projectsQuery = trpc.project.getAll.useQuery();
+  const techIconsQuery = trpc.techIcon.getAll.useQuery();
 
   const upsertMutation = trpc.project.upsert.useMutation({
     onSuccess: () => {
@@ -78,11 +93,11 @@ export default function ProjectsAdminPage() {
       title: "",
       description: "",
       imageLink: "",
-      techStack: "",
       link: "",
       date: "",
       featured: false,
       order: 0,
+      techIds: [],
     });
     setIsAdding(false);
     setEditingId(null);
@@ -98,16 +113,17 @@ export default function ProjectsAdminPage() {
     date?: string | null;
     featured?: boolean;
     order?: number;
+    techIds?: string[];
   }) => {
     setFormData({
       title: project.title,
       description: project.description,
       imageLink: project.imageLink || "",
-      techStack: project.techStack?.join(", ") || "",
       link: project.link || "",
       date: project.date || "",
       featured: project.featured || false,
       order: project.order || 0,
+      techIds: project.techIds || [],
     });
     setEditingId(project.id);
     setIsAdding(true);
@@ -115,13 +131,16 @@ export default function ProjectsAdminPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Derive tech names from techIds for the techStack array field
+    const techStack = (formData.techIds || [])
+      .map(id => techIconsQuery.data?.find(icon => icon.id === id)?.name)
+      .filter((name): name is string => !!name);
+
     upsertMutation.mutate({
       id: editingId || undefined,
       ...formData,
-      techStack: formData.techStack
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
+      techStack,
     });
   };
 
@@ -159,6 +178,7 @@ export default function ProjectsAdminPage() {
         paddingBottom: "80px",
       }}
     >
+      <GlobalAdminStyles />
       {/* Header */}
       <div
         style={{
@@ -188,7 +208,7 @@ export default function ProjectsAdminPage() {
               margin: "12px 0 0 0",
             }}
           >
-            // manage your professional portfolio
+            {`// manage your professional portfolio`}
           </p>
         </div>
 
@@ -214,6 +234,7 @@ export default function ProjectsAdminPage() {
       <AnimatePresence mode="wait">
         {isAdding ? (
           <motion.div
+            key="form"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
@@ -368,12 +389,74 @@ export default function ProjectsAdminPage() {
                       setFormData({ ...formData, description: v })
                     }
                   />
-                  <InputField
-                    label="Tech Stack (comma separated tokens)"
-                    placeholder="Next.js, Tailwind, tRPC, PostgreSQL"
-                    value={formData.techStack}
-                    onChange={(v) => setFormData({ ...formData, techStack: v })}
-                  />
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px", minWidth: 0 }}>
+                    <label style={{ fontSize: "14px", color: "#607B96", fontFamily: "monospace" }}>{"// select project technologies"}</label>
+                    <div style={{ 
+                      display: "grid", 
+                      gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", 
+                      gap: "8px",
+                      maxHeight: "180px",
+                      overflowY: "auto",
+                      padding: "12px",
+                      backgroundColor: "rgba(0, 0, 0, 0.2)",
+                      borderRadius: "16px",
+                      border: "1px solid rgba(30, 45, 61, 0.4)",
+                      scrollbarWidth: "thin",
+                      scrollbarColor: "#1E2D3D transparent"
+                    }}>
+                      {techIconsQuery.data?.map((icon) => {
+                        const isSelected = formData.techIds?.includes(icon.id);
+                        return (
+                          <button
+                            key={icon.id}
+                            type="button"
+                            onClick={() => {
+                              const currentIds = formData.techIds || [];
+                              const nextIds = isSelected 
+                                ? currentIds.filter(id => id !== icon.id)
+                                : [...currentIds, icon.id];
+                              setFormData({ ...formData, techIds: nextIds });
+                            }}
+                            style={{
+                              padding: "8px",
+                              backgroundColor: isSelected ? "rgba(254, 165, 95, 0.15)" : "transparent",
+                              border: `1px solid ${isSelected ? "#FEA55F" : "rgba(30, 45, 61, 0.4)"}`,
+                              borderRadius: "10px",
+                              color: isSelected ? "#FFFFFF" : "#607B96",
+                              fontSize: "11px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                              transition: "all 0.2s ease"
+                            }}
+                          >
+                            <span 
+                              className="tech-icon-wrapper"
+                              dangerouslySetInnerHTML={{ __html: icon.icon }} 
+                              style={{ 
+                                width: "18px", 
+                                height: "18px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexShrink: 0,
+                                color: isSelected ? "#FEA55F" : "#607B96"
+                              }} 
+                            />
+                            <span style={{ 
+                              overflow: "hidden", 
+                              textOverflow: "ellipsis", 
+                              whiteSpace: "nowrap" 
+                            }}>
+                              {icon.name}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
                   {/* Featured Checkbox */}
                   <div
@@ -450,6 +533,7 @@ export default function ProjectsAdminPage() {
           </motion.div>
         ) : (
           <motion.div
+            key="list"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             style={{
@@ -458,112 +542,104 @@ export default function ProjectsAdminPage() {
               gap: "24px",
             }}
           >
-            {projectsQuery.data?.map((project) => (
-              <div
-                key={project.id}
-                style={{
-                  backgroundColor: "rgba(1, 18, 33, 0.5)",
-                  border: "1px solid rgba(30, 45, 61, 0.6)",
-                  borderRadius: "24px",
-                  overflow: "hidden",
-                  transition: "all 0.3s ease",
-                  display: "flex",
-                  flexDirection: "column",
-                  position: "relative",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(254, 165, 95, 0.3)";
-                  e.currentTarget.style.boxShadow =
-                    "0 20px 40px rgba(0, 0, 0, 0.4)";
-                  e.currentTarget.style.backgroundColor =
-                    "rgba(1, 18, 33, 0.6)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(30, 45, 61, 0.6)";
-                  e.currentTarget.style.boxShadow = "none";
-                  e.currentTarget.style.backgroundColor =
-                    "rgba(1, 18, 33, 0.5)";
-                }}
-              >
-                {/* Image Container */}
+            {projectsQuery.data?.map((p) => {
+              const project = p as Project & { techIds?: string[] };
+              return (
                 <div
+                  key={project.id}
                   style={{
-                    height: "192px",
-                    backgroundColor: "#1C2B3A",
-                    position: "relative",
+                    backgroundColor: "rgba(1, 18, 33, 0.5)",
+                    border: "1px solid rgba(30, 45, 61, 0.6)",
+                    borderRadius: "24px",
                     overflow: "hidden",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {project.imageLink ? (
-                    <Image
-                      src={project.imageLink}
-                      alt={project.title}
-                      width={400}
-                      height={192}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        transition: "transform 0.7s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "scale(1.1)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "scale(1)";
-                      }}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "rgba(96, 123, 150, 0.3)",
-                        width: "100%",
-                        height: "100%",
-                      }}
-                    >
-                      <ImageIcon size={48} />
-                      <span
-                        style={{
-                          fontSize: "10px",
-                          fontFamily: "monospace",
-                          marginTop: "8px",
-                        }}
-                      >
-                        NO_IMAGE_STREAM
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div
-                  style={{
-                    padding: "28px",
+                    transition: "all 0.3s ease",
                     display: "flex",
                     flexDirection: "column",
-                    flex: 1,
+                    position: "relative",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(254, 165, 95, 0.3)";
+                    e.currentTarget.style.boxShadow =
+                      "0 20px 40px rgba(0, 0, 0, 0.4)";
+                    e.currentTarget.style.backgroundColor =
+                      "rgba(1, 18, 33, 0.6)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(30, 45, 61, 0.6)";
+                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.backgroundColor =
+                      "rgba(1, 18, 33, 0.5)";
                   }}
                 >
-                  {/* Title Section */}
+                  {/* Image Container */}
                   <div
                     style={{
-                      marginBottom: "16px",
+                      height: "192px",
+                      backgroundColor: "#1C2B3A",
+                      position: "relative",
+                      overflow: "hidden",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
+                    {project.imageLink ? (
+                      <Image
+                        src={project.imageLink}
+                        alt={project.title}
+                        width={400}
+                        height={192}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          transition: "transform 0.7s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = "scale(1.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = "scale(1)";
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "rgba(96, 123, 150, 0.3)",
+                          width: "100%",
+                          height: "100%",
+                        }}
+                      >
+                        <ImageIcon size={48} />
+                        <span
+                          style={{
+                            fontSize: "10px",
+                            fontFamily: "monospace",
+                            marginTop: "8px",
+                          }}
+                        >
+                          NO_IMAGE_STREAM
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div
+                    style={{
+                      padding: "28px",
+                      display: "flex",
+                      flexDirection: "column",
+                      flex: 1,
+                    }}
+                  >
+                    {/* Title Section */}
                     <div
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: "12px",
                         marginBottom: "16px",
                       }}
                     >
@@ -571,233 +647,258 @@ export default function ProjectsAdminPage() {
                         style={{
                           display: "flex",
                           alignItems: "center",
+                          justifyContent: "space-between",
                           gap: "12px",
-                          minWidth: 0,
-                          flex: 1,
+                          marginBottom: "16px",
                         }}
                       >
-                        <h3
+                        <div
                           style={{
-                            fontSize: "18px",
-                            fontWeight: "bold",
-                            color: "#FFFFFF",
-                            transition: "color 0.3s ease",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                            margin: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "12px",
+                            minWidth: 0,
+                            flex: 1,
                           }}
                         >
-                          {project.title}
-                        </h3>
-                        <span
+                          <h3
+                            style={{
+                              fontSize: "18px",
+                              fontWeight: "bold",
+                              color: "#FFFFFF",
+                              transition: "color 0.3s ease",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              margin: 0,
+                            }}
+                          >
+                            {project.title}
+                          </h3>
+                          <span
+                            style={{
+                              fontSize: "10px",
+                              fontFamily: "monospace",
+                              color: "rgba(254, 165, 95, 0.6)",
+                              padding: "4px 8px",
+                              border: "1px solid rgba(254, 165, 95, 0.2)",
+                              borderRadius: "6px",
+                              backgroundColor: "rgba(254, 165, 95, 0.05)",
+                              flexShrink: 0,
+                            }}
+                          >
+                            #{project.order}
+                          </span>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div
                           style={{
-                            fontSize: "10px",
-                            fontFamily: "monospace",
-                            color: "rgba(254, 165, 95, 0.6)",
-                            padding: "4px 8px",
-                            border: "1px solid rgba(254, 165, 95, 0.2)",
-                            borderRadius: "6px",
-                            backgroundColor: "rgba(254, 165, 95, 0.05)",
+                            display: "flex",
+                            gap: "8px",
                             flexShrink: 0,
                           }}
                         >
-                          #{project.order}
-                        </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(project);
+                            }}
+                            style={{
+                              padding: "8px",
+                              color: "#607B96",
+                              backgroundColor: "transparent",
+                              border: "none",
+                              borderRadius: "8px",
+                              cursor: "pointer",
+                              transition: "all 0.3s ease",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = "#FEA55F";
+                              e.currentTarget.style.backgroundColor =
+                                "rgba(255, 255, 255, 0.05)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = "#607B96";
+                              e.currentTarget.style.backgroundColor =
+                                "transparent";
+                            }}
+                          >
+                            <Edit3 size={18} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteMutation.mutate(project.id);
+                            }}
+                            style={{
+                              padding: "8px",
+                              color: "#607B96",
+                              backgroundColor: "transparent",
+                              border: "none",
+                              borderRadius: "8px",
+                              cursor: "pointer",
+                              transition: "all 0.3s ease",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = "#ef4444";
+                              e.currentTarget.style.backgroundColor =
+                                "rgba(239, 68, 68, 0.1)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = "#607B96";
+                              e.currentTarget.style.backgroundColor =
+                                "transparent";
+                            }}
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </div>
 
-                      {/* Action Buttons */}
+                      {/* Description */}
+                      <p
+                        style={{
+                          color: "#607B96",
+                          fontSize: "14px",
+                          lineHeight: "1.6",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          minHeight: "4.5rem",
+                          margin: "0",
+                        }}
+                      >
+                        {project.description}
+                      </p>
+                    </div>
+
+                    {/* Footer Section */}
+                    <div
+                      style={{
+                        marginTop: "auto",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "24px",
+                      }}
+                    >
+                      {/* Tech Stack */}
                       <div
                         style={{
                           display: "flex",
+                          flexWrap: "wrap",
                           gap: "8px",
-                          flexShrink: 0,
+                          minHeight: "40px",
                         }}
                       >
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(project);
-                          }}
-                          style={{
-                            padding: "8px",
-                            color: "#607B96",
-                            backgroundColor: "transparent",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: "pointer",
-                            transition: "all 0.3s ease",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.color = "#FEA55F";
-                            e.currentTarget.style.backgroundColor =
-                              "rgba(255, 255, 255, 0.05)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.color = "#607B96";
-                            e.currentTarget.style.backgroundColor =
-                              "transparent";
-                          }}
-                        >
-                          <Edit3 size={18} />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteMutation.mutate(project.id);
-                          }}
-                          style={{
-                            padding: "8px",
-                            color: "#607B96",
-                            backgroundColor: "transparent",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: "pointer",
-                            transition: "all 0.3s ease",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.color = "#ef4444";
-                            e.currentTarget.style.backgroundColor =
-                              "rgba(239, 68, 68, 0.1)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.color = "#607B96";
-                            e.currentTarget.style.backgroundColor =
-                              "transparent";
-                          }}
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                        {project.techIds?.map((techId: string) => {
+                          const icon = techIconsQuery.data?.find(i => i.id === techId);
+                          if (!icon) return null;
+                          return (
+                            <div
+                              key={techId}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                                backgroundColor: "rgba(67, 217, 173, 0.1)",
+                                padding: "4px 10px",
+                                borderRadius: "12px",
+                                border: "1px solid rgba(67, 217, 173, 0.2)",
+                              }}
+                            >
+                              <span 
+                                className="tech-icon-wrapper"
+                                dangerouslySetInnerHTML={{ __html: icon.icon }} 
+                                style={{ width: "12px", height: "12px", color: "#43D9AD" }} 
+                              />
+                              <span style={{ fontSize: "10px", color: "#43D9AD", fontWeight: "bold", textTransform: "uppercase" }}>
+                                {icon.name}
+                              </span>
+                            </div>
+                          );
+                        })}
+                        {(!project.techIds || project.techIds.length === 0) && project.techStack.map((tech: string, i: number) => (
+                          <span
+                            key={i}
+                            style={{
+                              fontSize: "10px",
+                              fontFamily: "monospace",
+                              color: "#43D9AD",
+                              backgroundColor: "rgba(67, 217, 173, 0.1)",
+                              padding: "6px 12px",
+                              borderRadius: "16px",
+                              border: "1px solid rgba(67, 217, 173, 0.2)",
+                              textTransform: "uppercase",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {tech}
+                          </span>
+                        ))}
                       </div>
-                    </div>
 
-                    {/* Description */}
-                    <p
-                      style={{
-                        color: "#607B96",
-                        fontSize: "14px",
-                        lineHeight: "1.6",
-                        display: "-webkit-box",
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                        minHeight: "4.5rem",
-                        margin: "0",
-                      }}
-                    >
-                      {project.description}
-                    </p>
-                  </div>
-
-                  {/* Footer Section */}
-                  <div
-                    style={{
-                      marginTop: "auto",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "24px",
-                    }}
-                  >
-                    {/* Tech Stack */}
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "8px",
-                        minHeight: "40px",
-                      }}
-                    >
-                      {project.techStack.map((tech: string, i: number) => (
-                        <span
-                          key={i}
-                          style={{
-                            fontSize: "10px",
-                            fontFamily: "monospace",
-                            color: "#43D9AD",
-                            backgroundColor: "rgba(67, 217, 173, 0.1)",
-                            padding: "6px 12px",
-                            borderRadius: "16px",
-                            border: "1px solid rgba(67, 217, 173, 0.2)",
-                            textTransform: "uppercase",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                      {project.techStack && project.techStack.length > 4 && (
-                        <span
-                          style={{
-                            fontSize: "10px",
-                            color: "#607B96",
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          +{project.techStack.length - 4}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Bottom Info */}
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        paddingTop: "24px",
-                        borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-                      }}
-                    >
+                      {/* Bottom Info */}
                       <div
                         style={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "8px",
-                          fontSize: "12px",
-                          color: "#607B96",
-                          fontFamily: "monospace",
+                          justifyContent: "space-between",
+                          paddingTop: "24px",
+                          borderTop: "1px solid rgba(255, 255, 255, 0.05)",
                         }}
                       >
-                        <Calendar size={12} />
-                        {project.date}
-                      </div>
-                      {project.link && (
-                        <a
-                          href={project.link}
-                          target="_blank"
-                          rel="noreferrer"
+                        <div
                           style={{
-                            color: "#FEA55F",
-                            textDecoration: "none",
                             display: "flex",
                             alignItems: "center",
-                            gap: "6px",
+                            gap: "8px",
                             fontSize: "12px",
-                            fontWeight: "bold",
-                            transition: "color 0.3s ease",
+                            color: "#607B96",
+                            fontFamily: "monospace",
                           }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.textDecoration = "underline")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.textDecoration = "none")
-                          }
                         >
-                          LIVE_DEMO <ExternalLink size={12} />
-                        </a>
-                      )}
+                          <Calendar size={12} />
+                          {project.date}
+                        </div>
+                        {project.link && (
+                          <a
+                            href={project.link}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{
+                              color: "#FEA55F",
+                              textDecoration: "none",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "6px",
+                              fontSize: "12px",
+                              fontWeight: "bold",
+                              transition: "color 0.3s ease",
+                            }}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.textDecoration = "underline")
+                            }
+                            onMouseLeave={(e) =>
+                              (e.currentTarget.style.textDecoration = "none")
+                            }
+                          >
+                            LIVE_DEMO <ExternalLink size={12} />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {projectsQuery.data?.length === 0 && (
               <div
