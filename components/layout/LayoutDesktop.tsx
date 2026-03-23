@@ -17,7 +17,6 @@ interface LayoutDesktopProps extends AboutPageProps {
     setActiveTab: (id: string) => void;
     toggleFolder: (folderId: string) => void;
   };
-  session: any;
 }
 
 /**
@@ -40,7 +39,6 @@ export function LayoutDesktop({
   activeTab,
   openFolders,
   actions,
-  session,
 }: LayoutDesktopProps) {
   return (
     <div className={styles.layoutContainer}>
@@ -59,7 +57,6 @@ export function LayoutDesktop({
           onToggleFolder={actions.toggleFolder}
           onOpenFile={actions.openFile}
           onSetActiveTab={actions.setActiveTab}
-          session={session}
         />
       </aside>
 

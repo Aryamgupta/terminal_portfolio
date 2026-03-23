@@ -2,6 +2,8 @@ import { router, protectedProcedure } from "../trpc";
 import { generatePortfolioJson } from "@/lib/data-export";
 import { TRPCError } from "@trpc/server";
 
+import { z } from "zod";
+
 export const systemRouter = router({
   generateJson: protectedProcedure.mutation(async () => {
     try {
@@ -14,6 +16,20 @@ export const systemRouter = router({
       });
     }
   }),
+
+  generateModuleJson: protectedProcedure
+    .input(z.object({ module: z.string() }))
+    .mutation(async ({ input }) => {
+      try {
+        return await generatePortfolioJson(input.module);
+      } catch (error) {
+        console.error(`Failed to generate ${input.module} JSON:`, error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Modular sync failed for domain: ${input.module}`,
+        });
+      }
+    }),
 
   redeploy: protectedProcedure.mutation(async () => {
     const deployHook = process.env.VERCEL_DEPLOY_HOOK;

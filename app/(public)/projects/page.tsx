@@ -3,14 +3,19 @@ import path from "path";
 import ProjectsContent from "@/components/ProjectsContent";
 
 async function getProjectsData() {
-  const dataPath = path.join(process.cwd(), "public/data/portfolio-data.json");
-  const jsonData = fs.readFileSync(dataPath, "utf8");
-  const data = JSON.parse(jsonData);
+  const projectsPath = path.join(process.cwd(), "public/data/projects.json");
+  const skillsPath = path.join(process.cwd(), "public/data/skills.json");
+  
+  const projectsJson = fs.existsSync(projectsPath) ? fs.readFileSync(projectsPath, "utf8") : '{"data":[]}';
+  const skillsJson = fs.existsSync(skillsPath) ? fs.readFileSync(skillsPath, "utf8") : '{"categories":[],"icons":[]}';
+
+  const { data: projects } = JSON.parse(projectsJson);
+  const { categories: skillCategories, icons: techIcons } = JSON.parse(skillsJson);
 
   return {
-    projects: data.projects,
-    techIcons: data.techIcons,
-    skillCategories: data.skillCategories,
+    projects: projects || [],
+    techIcons: techIcons || [],
+    skillCategories: skillCategories || [],
   };
 }
 

@@ -24,6 +24,86 @@ import {
 import { motion } from "framer-motion";
 import { trpc } from "@/utils/trpc";
 
+const SyncControls = () => {
+  const syncMutation = trpc.system.generateModuleJson.useMutation({
+    onSuccess: (data) => {
+      // Could add a toast here
+      console.log("Modular Sync Success:", data);
+    }
+  });
+
+  const modules = [
+    { id: "projects", label: "Projects", icon: Projector, color: "#FEA55F" },
+    { id: "skills", label: "Skills & Icons", icon: Cpu, color: "#E99287" },
+    { id: "experience", label: "Experience", icon: Calendar, color: "#4D5BCE" },
+    { id: "education", label: "Education", icon: Award, color: "#43D9AD" },
+    { id: "personal-info", label: "Personal", icon: Activity, color: "#C98BDF" },
+  ];
+
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
+      backgroundColor: 'rgba(1, 18, 33, 0.4)',
+      padding: '24px',
+      borderRadius: '20px',
+      border: '1px solid rgba(255, 255, 255, 0.05)'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <Terminal size={18} color="#FEA55F" />
+        <h2 style={{ fontSize: '14px', fontWeight: 'bold', color: '#FFFFFF', margin: 0, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+          Modular Data Sync Console
+        </h2>
+      </div>
+      
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+        gap: '12px'
+      }}>
+        {modules.map((mod) => (
+          <button
+            key={mod.id}
+            onClick={() => syncMutation.mutate({ module: mod.id })}
+            disabled={syncMutation.isPending && syncMutation.variables?.module === mod.id}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 16px',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              borderRadius: '12px',
+              color: '#E5E9F0',
+              fontSize: '12px',
+              fontFamily: 'monospace',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              opacity: syncMutation.isPending && syncMutation.variables?.module === mod.id ? 0.5 : 1
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+              e.currentTarget.style.borderColor = mod.color + '44';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+            }}
+          >
+            {syncMutation.isPending && syncMutation.variables?.module === mod.id ? (
+              <RefreshCw size={14} style={{ animation: 'spin 2s linear infinite' }} />
+            ) : (
+              <mod.icon size={14} color={mod.color} />
+            )}
+            {mod.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const DashboardPage = () => {
   const { data: session } = useSession();
   const { data: statsData, isLoading } = trpc.analytics.getStats.useQuery(undefined, {
@@ -98,12 +178,14 @@ const DashboardPage = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
       style={{
-        padding: '0px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '32px'
+        gap: '40px'
       }}
     >
+      {/* Sync State Management */}
+      <SyncControls />
+
       {/* Header Section */}
       <div style={{
         display: 'flex',

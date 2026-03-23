@@ -4,11 +4,12 @@ import SnakeGame from "@/components/SnakeGame";
 import TypeWritterRole from "@/components/TypeWritterRole";
 
 async function getHomeData() {
-  const dataPath = path.join(process.cwd(), "public/data/portfolio-data.json");
+  const dataPath = path.join(process.cwd(), "public/data/personal-info.json");
+  if (!fs.existsSync(dataPath)) return { name: "Aryam Gupta", role: "Front-end developer", githubLink: "https://github.com/aryam-gupta" };
+  
   const jsonData = fs.readFileSync(dataPath, "utf8");
-  const data = JSON.parse(jsonData);
+  const { data: personalInfo } = JSON.parse(jsonData);
 
-  const personalInfo = data.personalInfo;
   return {
     name: personalInfo?.name || "Aryam Gupta",
     role: personalInfo?.role || "Front-end developer",

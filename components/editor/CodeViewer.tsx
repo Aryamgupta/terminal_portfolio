@@ -3,7 +3,7 @@ import styles from "./CodeViewer.module.css";
 
 interface CodeViewerProps {
   lines: string[];
-  techIcons: TechIcon[];
+  techIcons?: TechIcon[];
 }
 
 export function CodeViewer({ lines, techIcons }: CodeViewerProps) {
@@ -12,12 +12,12 @@ export function CodeViewer({ lines, techIcons }: CodeViewerProps) {
 
     // Split line by icon markers: [icon:ID]
     const parts = line.split(/(\[icon:[^\]]+\])/g);
-    
+
     return parts.map((part, i) => {
-      if (part.startsWith("[icon:") && part.endsWith("]")) {
+      if (techIcons && part.startsWith("[icon:") && part.endsWith("]")) {
         const iconId = part.slice(6, -1);
         const icon = techIcons.find((t) => t.id === iconId);
-        
+
         if (icon) {
           return (
             <span
@@ -29,10 +29,13 @@ export function CodeViewer({ lines, techIcons }: CodeViewerProps) {
           );
         }
       }
-      
+
       const isTechHeader = part.includes("Technologies:");
       return (
-        <span key={i} className={isTechHeader ? styles.technologiesSection : ""}>
+        <span
+          key={i}
+          className={isTechHeader ? styles.technologiesSection : ""}
+        >
           {part}
         </span>
       );
@@ -41,19 +44,25 @@ export function CodeViewer({ lines, techIcons }: CodeViewerProps) {
 
   return (
     <div className={styles.codeViewer}>
-      <div className={styles.lineNumbers}>
-        {lines.map((_, i) => (
-          <div key={i} className={styles.lineNumber}>
-            {i + 1}
-          </div>
-        ))}
-      </div>
-      <div className={styles.codeContent}>
-        {lines.map((line, i) => (
-          <div key={i} className={styles.codeLine}>
-            <code>{renderLineContent(line || "")}</code>
-          </div>
-        ))}
+      <div className={styles.codeContainer}>
+        {lines.map((line, i) => {
+          // Detect common code prefixes (* , /**, */)
+          const prefixMatch = line.match(/^(\s*\/\*\*?|\s*\*\/|\s*\*)\s+/);
+          const prefix = prefixMatch ? prefixMatch[0] : "";
+          const content = prefixMatch ? line.slice(prefix.length) : line;
+
+          return (
+            <div key={i} className={styles.codeRow}>
+              <div className={styles.lineNumber}>
+                {i + 1}
+              </div>
+              <div className={styles.codeLine}>
+                {prefix && <span className={styles.codePrefix}>{prefix}</span>}
+                <code className={styles.codeText}>{renderLineContent(content || "")}</code>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

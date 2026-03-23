@@ -42,3 +42,5 @@ next-env.d.ts
 
 aryamgupta-portfolio/*
 /lib/generated/prisma
+
+/public/data/*

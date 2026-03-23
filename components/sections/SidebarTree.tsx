@@ -19,9 +19,6 @@ const GITHUB_ACTIVITY_ID = "github-activity";
  * - Keyboard navigation support
  * - Accessibility compliant
  */
-interface ExtendedSidebarTreeProps extends SidebarTreeProps {
-  session: any;
-}
 
 export function SidebarTree({
   personalInfo,
@@ -35,30 +32,12 @@ export function SidebarTree({
   onToggleFolder,
   onOpenFile,
   onSetActiveTab,
-  session,
-}: ExtendedSidebarTreeProps) {
+}: SidebarTreeProps) {
   const sharedRowProps = {
     openTabs,
     activeTab,
     onOpen: onOpenFile,
     onSetActiveTab,
-  };
-
-  const renderAdminActions = (path: string, id?: string) => {
-    if (!session) return null;
-    return (
-      <div 
-        onClick={(e) => e.stopPropagation()} 
-        style={{ display: "flex", gap: "8px", marginLeft: "auto" }}
-      >
-        <Link 
-          href={id ? `/admin/${path}?edit=${id}` : `/admin/${path}?add=true`}
-          style={{ color: "#FEA55F", display: "flex", alignItems: "center" }}
-        >
-          {id ? <Edit3 size={14} /> : <Plus size={14} />}
-        </Link>
-      </div>
-    );
   };
 
   return (
@@ -88,7 +67,6 @@ export function SidebarTree({
         label="professional-experience"
         openFolders={openFolders}
         onToggle={onToggleFolder}
-        adminActions={renderAdminActions("experience")}
       />
       {openFolders["professional-experience"] && (
         <div role="group">
@@ -98,7 +76,6 @@ export function SidebarTree({
               id={`exp-${exp.id}`}
               label={formatContentLines(exp.company)}
               indent={1}
-              adminActions={renderAdminActions("experience", exp.id)}
               {...sharedRowProps}
             />
           ))}
@@ -153,7 +130,6 @@ export function SidebarTree({
         label="skills"
         openFolders={openFolders}
         onToggle={onToggleFolder}
-        adminActions={renderAdminActions("skills")}
       />
       {openFolders["skills"] && (
         <div role="group">
@@ -163,7 +139,6 @@ export function SidebarTree({
               id={`skill-${cat.id || idx}`}
               label={formatContentLines(cat.name)}
               indent={1}
-              adminActions={renderAdminActions("skills", cat.id)}
               {...sharedRowProps}
             />
           ))}

@@ -101,22 +101,17 @@ export function useAboutPageContent(
           " * Technologies:",
           ...(() => {
             const ids = (exp as Experience).techIds || [];
-            const chunks: string[][] = [];
-            for (let i = 0; i < ids.length; i += 3) {
-              chunks.push(ids.slice(i, i + 3));
-            }
-            console.log(techIcons)
-            return chunks.map(chunk => {
-              const items = chunk.map(id => {
-                const icon = techIcons.find(t => t.id === id);
-                return `[icon:${id}] ${icon?.name || ""}`;
-              }).join("   ");
-              return ` *   ${items}`;
-            });
+            const techNames = ids.map(id => {
+              const icon = techIcons.find(t => t.id === id);
+              return icon?.name || "";
+            }).filter(Boolean);
+            
+            if (techNames.length === 0) return [];
+            return [` *   ${techNames.join(",  ")}`];
           })(),
           " *",
           " * Key Achievements:",
-          ...exp.description.map((line) => ` * • ${line}`),
+          ...exp.description.map((line) => ` * ${line}`),
           " */",
         ],
       };

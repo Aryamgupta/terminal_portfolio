@@ -9,12 +9,37 @@ import {
   MapPin,
   Calendar,
   X,
+  RefreshCw,
 } from "lucide-react";
 import { trpc } from "@/utils/trpc";
 import Button from "@/components/UI/Button";
 import InputField from "@/components/UI/InputField";
 import TextAreaField from "@/components/UI/TextAreaField";
 import { motion, AnimatePresence } from "framer-motion";
+
+const SyncModuleButton = ({ module }: { module: string }) => {
+  const syncMutation = trpc.system.generateModuleJson.useMutation();
+
+  return (
+    <Button
+      onClick={() => syncMutation.mutate({ module })}
+      loading={syncMutation.isPending}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        width: "fit-content",
+        backgroundColor: "rgba(67, 217, 173, 0.1)",
+        border: "1px solid rgba(67, 217, 173, 0.3)",
+        color: "#43D9AD",
+        padding: "8px 16px",
+      }}
+    >
+      <RefreshCw size={16} className={syncMutation.isPending ? "animate-spin" : ""} />
+      Sync Module
+    </Button>
+  );
+};
 
 const GlobalAdminStyles = () => (
   <style jsx global>{`
@@ -166,20 +191,23 @@ export default function ExperienceAdminPage() {
           </p>
         </div>
 
-        {!isAdding && (
-          <Button
-            onClick={() => setIsAdding(true)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              width: "fit-content",
-            }}
-          >
-            <Plus size={18} />
-            Record New Position
-          </Button>
-        )}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "16px" }}>
+          {!isAdding && (
+            <Button
+              onClick={() => setIsAdding(true)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                width: "fit-content",
+              }}
+            >
+              <Plus size={18} />
+              Add Experience
+            </Button>
+          )}
+          <SyncModuleButton module="experience" />
+        </div>
       </div>
 
       <AnimatePresence mode="wait">

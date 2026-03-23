@@ -14,12 +14,37 @@ import {
   Layout as LayoutIcon,
   Search,
   X,
+  RefreshCw,
 } from "lucide-react";
 import { trpc } from "@/utils/trpc";
 import { SkillItem } from "@/types/types-about";
 import Button from "@/components/UI/Button";
 import InputField from "@/components/UI/InputField";
 import { motion, AnimatePresence } from "framer-motion";
+
+const SyncModuleButton = ({ module }: { module: string }) => {
+  const syncMutation = trpc.system.generateModuleJson.useMutation();
+
+  return (
+    <Button
+      onClick={() => syncMutation.mutate({ module })}
+      loading={syncMutation.isPending}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        width: "fit-content",
+        backgroundColor: "rgba(67, 217, 173, 0.1)",
+        border: "1px solid rgba(67, 217, 173, 0.3)",
+        color: "#43D9AD",
+        padding: "8px 16px",
+      }}
+    >
+      <RefreshCw size={16} className={syncMutation.isPending ? "animate-spin" : ""} />
+      Sync Module
+    </Button>
+  );
+};
 
 export default function SkillsAdminPage() {
   const [isAdding, setIsAdding] = useState(false);
@@ -192,20 +217,24 @@ export default function SkillsAdminPage() {
           </p>
         </div>
 
-        {!isAdding && (
-          <Button
-            onClick={() => setIsAdding(true)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              width: "fit-content",
-            }}
-          >
-            <Plus size={18} />
-            Initialize Category
-          </Button>
-        )}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "16px" }}>
+          {!isAdding && (
+            <Button
+              onClick={() => setIsAdding(true)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                width: "fit-content",
+              }}
+            >
+              <Plus size={18} />
+              Add Category
+            </Button>
+          )}
+
+          <SyncModuleButton module="skills" />
+        </div>
       </div>
 
       <AnimatePresence mode="wait">

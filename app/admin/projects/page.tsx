@@ -12,12 +12,37 @@ import {
   Image as ImageIcon,
   Star,
   X,
+  RefreshCw,
 } from "lucide-react";
 import { trpc } from "@/utils/trpc";
 import Button from "@/components/UI/Button";
 import InputField from "@/components/UI/InputField";
 import TextAreaField from "@/components/UI/TextAreaField";
 import { motion, AnimatePresence } from "framer-motion";
+
+const SyncModuleButton = ({ module }: { module: string }) => {
+  const syncMutation = trpc.system.generateModuleJson.useMutation();
+
+  return (
+    <Button
+      onClick={() => syncMutation.mutate({ module })}
+      loading={syncMutation.isPending}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        width: "fit-content",
+        backgroundColor: "rgba(67, 217, 173, 0.1)",
+        border: "1px solid rgba(67, 217, 173, 0.3)",
+        color: "#43D9AD",
+        padding: "8px 16px",
+      }}
+    >
+      <RefreshCw size={16} className={syncMutation.isPending ? "animate-spin" : ""} />
+      Sync Module
+    </Button>
+  );
+};
 
 export default function ProjectsAdminPage() {
   const [isAdding, setIsAdding] = useState(false);
@@ -167,20 +192,23 @@ export default function ProjectsAdminPage() {
           </p>
         </div>
 
-        {!isAdding && (
-          <Button
-            onClick={() => setIsAdding(true)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              width: "fit-content",
-            }}
-          >
-            <Plus size={18} />
-            Deploy New Project
-          </Button>
-        )}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          {!isAdding && (
+            <Button
+              onClick={() => setIsAdding(true)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                width: "fit-content",
+              }}
+            >
+              <Plus size={18} />
+              Deploy New Project
+            </Button>
+          )}
+          <SyncModuleButton module="projects" />
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
@@ -200,11 +228,11 @@ export default function ProjectsAdminPage() {
               boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
             }}
           >
+            {/* Layout Content */}
             <div
               style={{
                 position: "absolute",
                 top: 0,
-                right: 0,
                 width: "256px",
                 height: "256px",
                 backgroundColor: "rgba(254, 165, 95, 0.05)",

@@ -2,10 +2,10 @@
 
 .codeViewer {
   display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
-  padding: 16px;
-  gap: 16px;
+  padding: 16px 0;
   font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.6;
@@ -35,27 +35,72 @@
   background-color: var(--color-text-muted);
 }
 
-.lineNumbers {
+.codeContainer {
   display: flex;
   flex-direction: column;
-  padding-right: 24px;
+  width: 100%;
+  min-width: fit-content;
+}
+
+.codeRow {
+  display: flex;
+  width: 100%;
+  min-height: 1.6em;
+  transition: background-color 0.2s ease;
+}
+
+.codeRow:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.lineNumber {
+  width: 50px;
+  padding-right: 16px;
   text-align: right;
   color: var(--color-text-muted);
   user-select: none;
   border-right: 1px solid var(--color-border);
   flex-shrink: 0;
+  font-size: 11px;
+  padding-top: 2px;
   
   /* Disable text selection on line numbers */
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  user-select: none;
 }
 
-.lineNumber {
-  height: 1.6em;
+.codeLine {
+  flex: 1;
+  padding-left: 12px;
+  padding-right: 16px;
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.codePrefix {
+  white-space: pre;
+  flex-shrink: 0;
+  color: #637777; /* Comment color for asterisks */
+}
+
+.codeText {
+  flex: 1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  min-width: 0;
+  
+  code {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    background: none;
+    padding: 0;
+    margin: 0;
+  }
 }
 
 .techIconInline {
@@ -87,91 +132,34 @@
   margin-top: 8px;
 }
 
-.codeContent {
-  flex: 1;
-  overflow: visible;
-}
-
+/* Syntax highlighting */
 .codeLine {
-  height: 1.6em;
-  display: flex;
-  align-items: center;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: pre-wrap;
-  
-  code {
-    font-family: inherit;
-    font-size: inherit;
-    color: inherit;
-    background: none;
-    padding: 0;
-    margin: 0;
-  }
-}
-
-/* Syntax highlighting - can be extended */
-.codeLine {
-  /* Comment color */
   :global(.comment) {
     color: #637777;
   }
-  
-  /* String color */
   :global(.string) {
     color: #ecc48d;
   }
-  
-  /* Keyword color */
   :global(.keyword) {
     color: #43d9ad;
   }
-  
-  /* Function color */
   :global(.function) {
     color: #f37f97;
   }
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .codeViewer {
-    padding: 12px;
-    gap: 12px;
+    padding: 12px 0;
     font-size: 12px;
   }
   
-  .lineNumbers {
-    padding-right: 16px;
-  }
-}
-
-/* Print styles */
-@media print {
-  .codeViewer {
-    overflow: visible;
+  .lineNumber {
+    width: 40px;
+    padding-right: 12px;
   }
   
-  .lineNumbers {
-    display: flex;
-  }
-}
-
-/* High contrast mode */
-@media (prefers-contrast: more) {
-  .lineNumbers {
-    border-right-width: 2px;
-    border-right-color: var(--color-border);
-  }
-  
-  .codeViewer {
-    border: 1px solid var(--color-border);
-  }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .codeViewer {
-    scroll-behavior: auto;
+  .codeLine {
+    padding-left: 12px;
   }
 }
