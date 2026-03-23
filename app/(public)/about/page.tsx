@@ -1,23 +1,36 @@
 import AboutPageContent from "@/components/AboutPageRefactored";
-import fs from "fs";
-import path from "path";
-// import AboutPageContent from "@/components/AboutPageContent";
+import { prisma } from "@/lib/prisma";
 
 async function getAboutData() {
-  const dataPath = path.join(process.cwd(), "public/data/portfolio-data.json");
-  const jsonData = fs.readFileSync(dataPath, "utf8");
-  const data = JSON.parse(jsonData);
+  const [
+    personalInfo,
+    education,
+    certificates,
+    skillCategories,
+    experiences,
+    techIcons,
+  ] = await Promise.all([
+    prisma.personalInfo.findFirst(),
+    prisma.education.findMany(),
+    prisma.certificate.findMany(),
+    prisma.skillCategory.findMany(),
+    prisma.experience.findMany({ orderBy: { order: "asc" } }),
+    prisma.techIcon.findMany(),
+  ]);
 
   return {
-    personalInfo: data.personalInfo,
-    education: data.education,
-    certificates: data.certificates,
-    skillCategories: data.skillCategories,
-    experiences: data.experiences || [],
+    personalInfo: personalInfo || null,
+    education: education || [],
+    certificates: certificates || [],
+    skillCategories: skillCategories || [],
+    experiences: experiences || [],
+    techIcons: techIcons || [],
   };
 }
 
+import { AboutPageProps } from "@/types/types-about";
+
 export default async function AboutPage() {
   const data = await getAboutData();
-  return <AboutPageContent {...data} />;
+  return <AboutPageContent {...(data as unknown as AboutPageProps)} />;
 }

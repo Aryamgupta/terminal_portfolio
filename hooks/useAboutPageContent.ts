@@ -20,7 +20,8 @@ export function useAboutPageContent(
   personalInfo: AboutPageProps["personalInfo"],
   education: AboutPageProps["education"],
   certificates: AboutPageProps["certificates"],
-  experiences: AboutPageProps["experiences"]
+  experiences: AboutPageProps["experiences"],
+  skillCategories: AboutPageProps["skillCategories"]
 ): ContentRecord {
   return useMemo(() => {
     const content: ContentRecord = {
@@ -101,6 +102,27 @@ export function useAboutPageContent(
       };
     });
 
+    // Add skill blocks
+    skillCategories.forEach((cat, idx) => {
+      const key = `skill-${cat.id || idx}`;
+      content[key] = {
+        label: formatContentLines(cat.name),
+        lines: [
+          "/**",
+          ` * @category ${cat.name}`,
+          " *",
+          " * Technical Skills Matrix:",
+          ...cat.skills.map((s) => {
+            const name = typeof s === "string" ? s : s.name;
+            const iconId =
+              typeof s === "object" && s !== null ? s.iconId : null;
+            return ` * • ${name}${iconId ? ` [icon:${iconId}]` : ""}`;
+          }),
+          " */",
+        ],
+      };
+    });
+
     return content;
-  }, [personalInfo, education, certificates, experiences]);
+  }, [personalInfo, education, certificates, experiences, skillCategories]);
 }

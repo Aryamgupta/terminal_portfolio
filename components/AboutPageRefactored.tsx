@@ -32,6 +32,7 @@ export default function AboutPageContent({
   certificates,
   skillCategories,
   experiences,
+  techIcons,
 }: AboutPageProps) {
   const isMobile = useIsMobile();
   
@@ -43,7 +44,8 @@ export default function AboutPageContent({
     personalInfo,
     education,
     certificates,
-    experiences
+    experiences,
+    skillCategories
   );
 
   // SEO Metadata
@@ -52,7 +54,7 @@ export default function AboutPageContent({
       title: `About ${personalInfo?.name || "Developer"}`,
       description: personalInfo?.bio?.[0] || "Professional portfolio",
       keywords: [
-        ...(skillCategories.flatMap((cat) => cat.skills) || []),
+        ...(skillCategories.flatMap((cat) => cat.skills.map(s => s.name)) || []),
         "Software Developer",
         "Full Stack",
       ],
@@ -104,6 +106,7 @@ export default function AboutPageContent({
         certificates={certificates}
         skillCategories={skillCategories}
         experiences={experiences}
+        techIcons={techIcons}
         initialContent={initialContent}
         openTabs={openTabs}
         activeTab={activeTab}

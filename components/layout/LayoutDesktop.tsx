@@ -4,7 +4,6 @@ import { AboutPageProps } from "@/types/types-about";
 import { SidebarTree } from "../sections/SidebarTree";
 import { EditorPane } from "../sections/EditorPane";
 import { RightPanel } from "../sections/RightPanel";
-import { ResumeButton } from "../buttons/ResumeButton";
 import styles from "./Layout.module.css";
 
 interface LayoutDesktopProps extends AboutPageProps {
@@ -34,6 +33,7 @@ export function LayoutDesktop({
   certificates,
   skillCategories,
   experiences,
+  techIcons,
   initialContent,
   openTabs,
   activeTab,
@@ -50,6 +50,7 @@ export function LayoutDesktop({
           certificates={certificates}
           skillCategories={skillCategories}
           experiences={experiences}
+          techIcons={techIcons}
           openFolders={openFolders}
           openTabs={openTabs}
           activeTab={activeTab}
@@ -57,7 +58,6 @@ export function LayoutDesktop({
           onOpenFile={actions.openFile}
           onSetActiveTab={actions.setActiveTab}
         />
-        <ResumeButton resumeLink={personalInfo?.resumeLink} />
       </aside>
 
       {/* Center Editor Pane */}
@@ -73,6 +73,7 @@ export function LayoutDesktop({
         education={education}
         certificates={certificates}
         experiences={experiences}
+        techIcons={techIcons}
       />
 
       {/* Right Panel */}
@@ -83,6 +84,7 @@ export function LayoutDesktop({
         certificates={certificates}
         skillCategories={skillCategories}
         experiences={experiences}
+        techIcons={techIcons}
       />
     </div>
   );

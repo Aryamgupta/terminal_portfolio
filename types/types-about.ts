@@ -29,9 +29,21 @@ export interface Certificate {
   id: string;
 }
 
-export interface SkillCategory {
+export interface SkillItem {
   name: string;
-  skills: string[];
+  iconId?: string | null;
+}
+
+export interface SkillCategory {
+  id?: string;
+  name: string;
+  skills: SkillItem[];
+}
+
+export interface TechIcon {
+  id: string;
+  name: string;
+  icon: string;
 }
 
 export interface Experience {
@@ -49,6 +61,7 @@ export interface AboutPageProps {
   certificates: Certificate[];
   skillCategories: SkillCategory[];
   experiences: Experience[];
+  techIcons: TechIcon[];
 }
 
 export interface AboutPageMetadata {
@@ -80,6 +93,17 @@ export interface EditorPaneProps {
   education: Education[];
   certificates: Certificate[];
   experiences: Experience[];
+  techIcons: TechIcon[];
+}
+
+export interface RightPanelProps {
+  activeTab: string;
+  personalInfo: PersonalInfo | null;
+  education: Education[];
+  certificates: Certificate[];
+  skillCategories: SkillCategory[];
+  experiences: Experience[];
+  techIcons: TechIcon[];
 }
 
 export interface TerminalCard {

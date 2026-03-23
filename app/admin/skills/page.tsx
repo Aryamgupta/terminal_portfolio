@@ -13,10 +13,10 @@ import {
   Globe,
   Layout as LayoutIcon,
   Search,
-  CheckCircle2,
   X,
 } from "lucide-react";
 import { trpc } from "@/utils/trpc";
+import { SkillItem } from "@/types/types-about";
 import Button from "@/components/UI/Button";
 import InputField from "@/components/UI/InputField";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,10 +26,13 @@ export default function SkillsAdminPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
-    skills: "",
+    skills: [] as { name: string; iconId: string | null }[],
   });
+  const [newSkillName, setNewSkillName] = useState("");
+  const [newSkillIconId, setNewSkillIconId] = useState<string | null>(null);
 
   const skillsQuery = trpc.skillCategory.getAll.useQuery();
+  const iconsQuery = trpc.techIcon.getAll.useQuery();
 
   const upsertMutation = trpc.skillCategory.upsert.useMutation({
     onSuccess: () => {
@@ -47,23 +50,55 @@ export default function SkillsAdminPage() {
   const resetForm = () => {
     setFormData({
       name: "",
-      skills: "",
+      skills: [],
     });
+    setNewSkillName("");
+    setNewSkillIconId(null);
     setIsAdding(false);
     setEditingId(null);
   };
 
-  const handleEdit = (category: {
-    id: string;
-    name: string;
-    skills: string[];
-  }) => {
+  const handleEdit = (category: unknown) => {
+    const cat = category as { id: string; name: string; skills: (SkillItem | string)[] };
     setFormData({
-      name: category.name,
-      skills: category.skills.join(", "),
+      name: cat.name,
+      skills: cat.skills.map((s) => {
+        if (typeof s === "string") return { name: s, iconId: null };
+        return {
+          name: s.name,
+          iconId: s.iconId || null,
+        };
+      }),
     });
-    setEditingId(category.id);
+    setEditingId(cat.id);
     setIsAdding(true);
+  };
+
+  const addSkill = () => {
+    if (!newSkillName.trim()) return;
+    setFormData({
+      ...formData,
+      skills: [...formData.skills, { name: newSkillName.trim(), iconId: newSkillIconId }],
+    });
+    setNewSkillName("");
+    setNewSkillIconId(null);
+  };
+
+  const removeSkill = (index: number) => {
+    const newSkills = [...formData.skills];
+    newSkills.splice(index, 1);
+    setFormData({ ...formData, skills: newSkills });
+  };
+
+  const updateSkillIcon = (index: number, iconId: string | null) => {
+    const newSkills = [...formData.skills];
+    const skill = newSkills[index];
+    if (typeof skill === "string") {
+      newSkills[index] = { name: skill, iconId };
+    } else {
+      newSkills[index] = { ...skill, iconId };
+    }
+    setFormData({ ...formData, skills: newSkills });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -71,10 +106,7 @@ export default function SkillsAdminPage() {
     upsertMutation.mutate({
       id: editingId || undefined,
       name: formData.name,
-      skills: formData.skills
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
+      skills: formData.skills,
     });
   };
 
@@ -156,7 +188,7 @@ export default function SkillsAdminPage() {
               margin: "12px 0 0 0",
             }}
           >
-            // configure your technical proficiency
+            {"// configure your technical proficiency"}
           </p>
         </div>
 
@@ -269,12 +301,127 @@ export default function SkillsAdminPage() {
                   value={formData.name}
                   onChange={(v) => setFormData({ ...formData, name: v })}
                 />
-                <InputField
-                  label="Skills (comma separated)"
-                  placeholder="e.g. Node.js, Express, PostgreSQL, Redis"
-                  value={formData.skills}
-                  onChange={(v) => setFormData({ ...formData, skills: v })}
-                />
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <label style={{ fontSize: "14px", color: "#607B96", fontFamily: "monospace" }}>{"// skills inventory"}</label>
+                  <div style={{ display: "flex", gap: "12px", alignItems: "flex-end" }}>
+                    <div style={{ flex: 1, display: "flex", gap: "12px", alignItems: "flex-end" }}>
+                      <div style={{ flex: 1 }}>
+                        <InputField
+                          label=""
+                          placeholder="Skill name (e.g. React)"
+                          value={newSkillName}
+                          onChange={(v) => setNewSkillName(v)}
+                        />
+                      </div>
+                      <div style={{ width: "160px" }}>
+                        <select
+                          value={newSkillIconId || ""}
+                          onChange={(e) => setNewSkillIconId(e.target.value || null)}
+                          style={{
+                            width: "100%",
+                            backgroundColor: "#010C15",
+                            color: "#607B96",
+                            border: "1px solid #1E2D3D",
+                            borderRadius: "8px",
+                            padding: "12px",
+                            fontSize: "14px",
+                            outline: "none",
+                            appearance: "none",
+                            height: "46px",
+                            marginBottom: "4px"
+                          }}
+                        >
+                          <option value="">Select Icon</option>
+                          {iconsQuery.data?.map(icon => (
+                            <option key={icon.id} value={icon.id}>{icon.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      {newSkillIconId && (
+                        <div 
+                          style={{ 
+                            width: "46px", 
+                            height: "46px", 
+                            backgroundColor: "rgba(30, 45, 61, 0.4)",
+                            borderRadius: "8px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "#FEA55F",
+                            marginBottom: "4px"
+                          }}
+                          dangerouslySetInnerHTML={{ 
+                            __html: iconsQuery.data?.find(i => i.id === newSkillIconId)?.icon || "" 
+                          }}
+                        />
+                      )}
+                    </div>
+                    <Button type="button" onClick={addSkill} style={{ height: "46px", marginBottom: "4px" }}>
+                      <Plus size={18} /> Add
+                    </Button>
+                  </div>
+                  
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "12px" }}>
+                    {(formData.skills as unknown as (SkillItem | string)[]).map((skill, idx) => {
+                      const name = typeof skill === "string" ? skill : (skill as SkillItem).name;
+                      const iconId = typeof skill === "string" ? null : (skill as SkillItem).iconId;
+                      const icon = iconsQuery.data?.find((i) => i.id === iconId);
+                      
+                      return (
+                        <div key={idx} style={{ 
+                          display: "flex", 
+                          alignItems: "center", 
+                          gap: "12px", 
+                          backgroundColor: "rgba(30, 45, 61, 0.4)", 
+                          padding: "12px", 
+                          borderRadius: "12px",
+                          border: "1px solid rgba(30, 45, 61, 0.6)"
+                        }}>
+                          {icon && (
+                            <div 
+                              style={{ width: "18px", height: "18px", color: "#FEA55F", display: "flex", alignItems: "center" }}
+                              dangerouslySetInnerHTML={{ __html: icon.icon }}
+                            />
+                          )}
+                          <span style={{ color: "#FFFFFF", flex: 1, fontSize: "14px" }}>{name}</span>
+                          
+                          <select
+                            value={iconId || ""}
+                            onChange={(e) => updateSkillIcon(idx, e.target.value || null)}
+                            style={{
+                              backgroundColor: "#010C15",
+                              color: "#607B96",
+                              border: "1px solid #1E2D3D",
+                              borderRadius: "8px",
+                              padding: "6px 10px",
+                              fontSize: "12px",
+                              outline: "none"
+                            }}
+                          >
+                            <option value="">No Icon</option>
+                            {iconsQuery.data?.map(icon => (
+                              <option key={icon.id} value={icon.id}>{icon.name}</option>
+                            ))}
+                          </select>
+                          
+                          <button
+                            type="button"
+                            onClick={() => removeSkill(idx)}
+                            style={{
+                              backgroundColor: "transparent",
+                              border: "none",
+                              color: "#ef4444",
+                              cursor: "pointer",
+                              padding: "4px"
+                            }}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
 
               <div
@@ -493,43 +640,51 @@ export default function SkillsAdminPage() {
                     gap: "8px",
                   }}
                 >
-                  {category.skills.map((skill: string, i: number) => (
-                    <span
-                      key={i}
-                      style={{
-                        padding: "8px 12px",
-                        backgroundColor: "rgba(30, 45, 61, 0.5)",
-                        border: "1px solid rgba(30, 45, 61, 0.8)",
-                        color: "#43D9AD",
-                        fontSize: "12px",
-                        fontFamily: "monospace",
-                        borderRadius: "8px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        transition: "all 0.3s ease",
-                        cursor: "default",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor =
-                          "rgba(67, 217, 173, 0.3)";
-                        e.currentTarget.style.backgroundColor =
-                          "rgba(67, 217, 173, 0.05)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor =
-                          "rgba(30, 45, 61, 0.8)";
-                        e.currentTarget.style.backgroundColor =
-                          "rgba(30, 45, 61, 0.5)";
-                      }}
-                    >
-                      <CheckCircle2
-                        size={12}
-                        style={{ color: "rgba(67, 217, 173, 0.5)" }}
-                      />
-                      {skill}
-                    </span>
-                  ))}
+                  {(category.skills as (SkillItem | string)[]).map((skill, i) => {
+                    const name = typeof skill === "string" ? skill : skill.name;
+                    const iconId = typeof skill === "string" ? null : skill.iconId;
+                    const icon = iconsQuery.data?.find((ic) => ic.id === iconId);
+                    
+                    return (
+                      <span
+                        key={i}
+                        style={{
+                          padding: "8px 12px",
+                          backgroundColor: "rgba(30, 45, 61, 0.5)",
+                          border: "1px solid rgba(30, 45, 61, 0.8)",
+                          color: "#43D9AD",
+                          fontSize: "12px",
+                          fontFamily: "monospace",
+                          borderRadius: "8px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          transition: "all 0.3s ease",
+                          cursor: "default",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor =
+                            "rgba(67, 217, 173, 0.3)";
+                          e.currentTarget.style.backgroundColor =
+                            "rgba(67, 217, 173, 0.05)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor =
+                            "rgba(30, 45, 61, 0.8)";
+                          e.currentTarget.style.backgroundColor =
+                            "rgba(30, 45, 61, 0.5)";
+                        }}
+                      >
+                        {icon && (
+                          <div 
+                            style={{ width: "14px", height: "14px", color: "#43D9AD", display: "flex", alignItems: "center" }}
+                            dangerouslySetInnerHTML={{ __html: icon.icon }} 
+                          />
+                        )}
+                        {name}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             ))}

@@ -188,7 +188,10 @@ export function useTerminalCards(
             cmd:
               (skillCategories?.[0]?.skills || [])
                 .slice(0, 3)
-                .map((s) => s.toLowerCase() + "/")
+                .map((s) => {
+                  const name = typeof s === "string" ? s : s.name;
+                  return name.toLowerCase().replace(/\s+/g, "_") + "/";
+                })
                 .join(" ") || "javascript/ react/ node.js/",
             color: "#4D5BCE",
           },
@@ -197,7 +200,10 @@ export function useTerminalCards(
             cmd:
               (skillCategories?.[1]?.skills || [])
                 .slice(0, 3)
-                .map((s) => s.toLowerCase() + "/")
+                .map((s) => {
+                  const name = typeof s === "string" ? s : s.name;
+                  return name.toLowerCase().replace(/\s+/g, "_") + "/";
+                })
                 .join(" ") || "mongodb/ express/ typescript/",
             color: "#4D5BCE",
           },

@@ -137,96 +137,224 @@
   ],
   "skillCategories": [
     {
+      "skills": [
+        {
+          "name": "ReactJS",
+          "iconId": "69beb317d6a9267573ef9bc2"
+        },
+        {
+          "name": "NextJs",
+          "iconId": "69b8fc16c792a8aaf40d3fa2"
+        },
+        {
+          "name": "Html5",
+          "iconId": "69beb457d6a9267573ef9bc6"
+        },
+        {
+          "name": "CSS3",
+          "iconId": "69beb478d6a9267573ef9bc7"
+        },
+        {
+          "name": "TanStack",
+          "iconId": "69beb3c0d6a9267573ef9bc4"
+        },
+        {
+          "name": "React Query",
+          "iconId": "69beb373d6a9267573ef9bc3"
+        },
+        {
+          "name": "Tailwind CSS",
+          "iconId": "69beb428d6a9267573ef9bc5"
+        },
+        {
+          "name": "BootStrap",
+          "iconId": "69beb499d6a9267573ef9bc8"
+        }
+      ],
       "id": "69b5524229196054d057635a",
-      "name": "Frontend",
-      "skills": [
-        "React.js",
-        "Next.js",
-        "React Query",
-        "TanStack",
-        "Tailwind",
-        "HTML5",
-        "CSS3",
-        "Bootstrap"
-      ]
+      "name": "Frontend"
     },
     {
+      "skills": [
+        {
+          "name": "Java",
+          "iconId": "69beb4b2d6a9267573ef9bc9"
+        },
+        {
+          "name": "JavaScript",
+          "iconId": "69beb51ed6a9267573ef9bcb"
+        },
+        {
+          "name": "TypeScript",
+          "iconId": "69beb4d1d6a9267573ef9bca"
+        },
+        {
+          "name": "Python",
+          "iconId": "69beb5b0d6a9267573ef9bcf"
+        },
+        {
+          "name": "SQL",
+          "iconId": "69beb52bd6a9267573ef9bcc"
+        }
+      ],
       "id": "69b5524229196054d057635c",
-      "name": "Languages",
-      "skills": [
-        "Java",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "SQL"
-      ]
+      "name": "Languages"
     },
     {
+      "skills": [
+        {
+          "name": "GIt",
+          "iconId": "69beb6bcd6a9267573ef9bd5"
+        },
+        {
+          "name": "Vercel",
+          "iconId": "69beb67ed6a9267573ef9bd3"
+        },
+        {
+          "name": "Linux",
+          "iconId": "69beb5f1d6a9267573ef9bd0"
+        },
+        {
+          "name": "Docker",
+          "iconId": "69beb604d6a9267573ef9bd1"
+        },
+        {
+          "name": "SSH",
+          "iconId": "69beb68ad6a9267573ef9bd4"
+        },
+        {
+          "name": "pm2",
+          "iconId": "69beb674d6a9267573ef9bd2"
+        }
+      ],
       "id": "69b5524229196054d057635d",
-      "name": "Tools",
-      "skills": [
-        "Linux",
-        "Docker",
-        "Git",
-        "PM2",
-        "SSH",
-        "Vercel"
-      ]
+      "name": "Tools"
     },
     {
+      "skills": [
+        {
+          "name": "ExpressJs",
+          "iconId": "69beb747d6a9267573ef9bd9"
+        },
+        {
+          "name": "NodeJs",
+          "iconId": "69beb704d6a9267573ef9bd6"
+        },
+        {
+          "name": "BunJs",
+          "iconId": "69beb726d6a9267573ef9bd8"
+        },
+        {
+          "name": "REST Apis",
+          "iconId": "69beb7b1d6a9267573ef9bdb"
+        },
+        {
+          "name": "Websockets",
+          "iconId": "69beb79cd6a9267573ef9bda"
+        },
+        {
+          "name": "tRPC",
+          "iconId": "69beb7e5d6a9267573ef9bdc"
+        }
+      ],
       "id": "69b7e7ecf568a3fd287d60ae",
-      "name": "Backend",
-      "skills": [
-        "Node.js",
-        "Express.js",
-        "Bun.js",
-        "REST APIs",
-        "WebSockets",
-        "tRPC"
-      ]
+      "name": "Backend"
     },
     {
+      "skills": [
+        {
+          "name": "MongoDB",
+          "iconId": "69beb851d6a9267573ef9bdf"
+        },
+        {
+          "name": "PostgresSQL",
+          "iconId": "69beb83dd6a9267573ef9bdd"
+        },
+        {
+          "name": "SQLite",
+          "iconId": "69beb89fd6a9267573ef9be2"
+        },
+        {
+          "name": "Firebase",
+          "iconId": "69beb895d6a9267573ef9be1"
+        },
+        {
+          "name": "PrismaORM",
+          "iconId": "69beb85ed6a9267573ef9be0"
+        },
+        {
+          "name": "MySQL",
+          "iconId": "69beb848d6a9267573ef9bde"
+        }
+      ],
       "id": "69beaa12f2adfb6fed10bbf9",
-      "name": "Databases",
-      "skills": [
-        "PostgreSQL",
-        "MongoDB",
-        "MySQL",
-        "SQLite3",
-        "Prisma ORM",
-        "Firebase"
-      ]
+      "name": "Databases"
     },
     {
+      "skills": [
+        {
+          "name": "Kafka",
+          "iconId": "69beb8ced6a9267573ef9be3"
+        },
+        {
+          "name": "MQTT",
+          "iconId": "69beb955d6a9267573ef9be6"
+        },
+        {
+          "name": "Redis",
+          "iconId": "69beb960d6a9267573ef9be7"
+        },
+        {
+          "name": "BullMQ",
+          "iconId": "69beb902d6a9267573ef9be5"
+        }
+      ],
       "id": "69beaa3bf2adfb6fed10bbfa",
-      "name": "Messaging",
-      "skills": [
-        "Kafka",
-        "MQTT",
-        "Redis",
-        "BullMQ",
-        "RabbitMQ"
-      ]
+      "name": "Messaging"
     },
     {
+      "skills": [
+        {
+          "name": "JWT",
+          "iconId": "69beb9cbd6a9267573ef9bea"
+        },
+        {
+          "name": "NextAuth",
+          "iconId": "69beb9bbd6a9267573ef9be9"
+        },
+        {
+          "name": "Symmetric & Asymmetric Encryption",
+          "iconId": null
+        }
+      ],
       "id": "69beaa4bf2adfb6fed10bbfb",
-      "name": "Auth & Security",
-      "skills": [
-        "JWT",
-        "NextAuth",
-        "Symmetric & Asymmetric Encryption"
-      ]
+      "name": "Auth & Security"
     },
     {
-      "id": "69beaa72f2adfb6fed10bbfc",
-      "name": "CS Fundamentals",
       "skills": [
-        "Data Structures & Algorithms (500+)",
-        "OOPs",
-        "OS",
-        "DBMS",
-        "Computer Networks"
-      ]
+        {
+          "name": "Data Structures & Algorithms (500+)",
+          "iconId": null
+        },
+        {
+          "name": "OOPs",
+          "iconId": null
+        },
+        {
+          "name": "OS",
+          "iconId": null
+        },
+        {
+          "name": "DBMS",
+          "iconId": null
+        },
+        {
+          "name": "Computer Networks",
+          "iconId": null
+        }
+      ],
+      "id": "69beaa72f2adfb6fed10bbfc",
+      "name": "CS Fundamentals"
     }
   ],
   "techIcons": [
@@ -461,5 +589,5 @@
       "order": 1
     }
   ],
-  "exportedAt": "2026-03-21T15:33:03.267Z"
+  "exportedAt": "2026-03-23T06:12:39.137Z"
 }

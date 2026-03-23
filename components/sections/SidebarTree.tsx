@@ -3,7 +3,6 @@ import React from "react";
 import { SidebarTreeProps } from "@/types/types-about";
 import { FolderRow } from "../rows/FolderRow";
 import { FileRow } from "../rows/FileRow";
-import { ContactRow } from "../rows/ContactRow";
 import styles from "./SidebarTree.module.css";
 import { ResumeButton } from "../buttons/ResumeButton";
 
@@ -22,6 +21,7 @@ export function SidebarTree({
   education,
   certificates,
   experiences,
+  skillCategories,
   openFolders,
   openTabs,
   activeTab,
@@ -120,6 +120,27 @@ export function SidebarTree({
         </div>
       )}
 
+      {/* Skills Section */}
+      <FolderRow
+        id="skills"
+        label="skills"
+        openFolders={openFolders}
+        onToggle={onToggleFolder}
+      />
+      {openFolders["skills"] && (
+        <div role="group">
+          {skillCategories.map((cat, idx) => (
+            <FileRow
+              key={`skill-${cat.id || idx}`}
+              id={`skill-${cat.id || idx}`}
+              label={cat.name.toLowerCase().replace(/\s+/g, "-")}
+              indent={1}
+              {...sharedRowProps}
+            />
+          ))}
+        </div>
+      )}
+
       {/* GitHub Activity */}
       <FileRow
         id={GITHUB_ACTIVITY_ID}
@@ -127,11 +148,7 @@ export function SidebarTree({
         indent={0}
         {...sharedRowProps}
       />
-      <ResumeButton
-        resumeLink={
-          "https://drive.google.com/file/d/1BOZrLTJCZ5sCpkblaoppslLZAdOb2pmx/view"
-        }
-      />
+      {personalInfo?.resumeLink && <ResumeButton resumeLink={personalInfo.resumeLink} />}
     </div>
   );
 }

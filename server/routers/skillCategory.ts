@@ -5,27 +5,48 @@ import { prisma } from "@/lib/prisma";
 const SkillCategorySchema = z.object({
   id: z.string().optional(),
   name: z.string(),
-  skills: z.array(z.string()),
+  skills: z.array(z.object({
+    name: z.string(),
+    iconId: z.string().optional().nullable(),
+  })),
 });
 
 export const skillCategoryRouter = router({
   getAll: protectedProcedure.query(async () => {
-    return await prisma.skillCategory.findMany();
+    const rawCategories = await prisma.skillCategory.findMany();
+    return rawCategories.map((cat) => ({
+      ...cat,
+      skills: ((cat.skills as unknown[]) || []).map((s) => {
+        if (typeof s === "string") return { name: s, iconId: null };
+        const skill = s as { name?: string; iconId?: string | null };
+        return {
+          name: skill.name || "",
+          iconId: skill.iconId || null,
+        };
+      }),
+    }));
   }),
-  
+
   upsert: protectedProcedure
     .input(SkillCategorySchema)
     .mutation(async ({ input }) => {
       const { id, ...data } = input;
-      
+
+      console.log({data});
       if (id) {
         return await prisma.skillCategory.update({
           where: { id },
-          data,
+          data: {
+            name: data.name,
+            skills: data.skills,
+          },
         });
       } else {
         return await prisma.skillCategory.create({
-          data,
+          data: {
+            name: data.name,
+            skills: data.skills,
+          },
         });
       }
     }),

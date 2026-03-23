@@ -3,7 +3,6 @@ import React from "react";
 import { AboutPageProps } from "@/types/types-about";
 import { SidebarTree } from "../sections/SidebarTree";
 import { EditorPane } from "../sections/EditorPane";
-import { ResumeButton } from "../buttons/ResumeButton";
 import styles from "./LayoutMobile.module.css";
 
 interface LayoutMobileProps extends AboutPageProps {
@@ -30,6 +29,7 @@ export function LayoutMobile({
   certificates,
   skillCategories,
   experiences,
+  techIcons,
   initialContent,
   openTabs,
   activeTab,
@@ -42,7 +42,7 @@ export function LayoutMobile({
       <header className={styles.header} role="banner">
         <h1>_about</h1>
       </header>
-
+ 
       {/* File Tree Section */}
       <nav className={styles.fileTreeSection} aria-label="File explorer">
         <SidebarTree
@@ -51,6 +51,7 @@ export function LayoutMobile({
           certificates={certificates}
           skillCategories={skillCategories}
           experiences={experiences}
+          techIcons={techIcons}
           openFolders={openFolders}
           openTabs={openTabs}
           activeTab={activeTab}
@@ -58,9 +59,8 @@ export function LayoutMobile({
           onOpenFile={actions.openFile}
           onSetActiveTab={actions.setActiveTab}
         />
-        <ResumeButton resumeLink={personalInfo?.resumeLink} />
       </nav>
-
+ 
       {/* Editor Pane */}
       <main className={styles.editorSection}>
         <EditorPane
@@ -75,6 +75,7 @@ export function LayoutMobile({
           education={education}
           certificates={certificates}
           experiences={experiences}
+          techIcons={techIcons}
         />
       </main>
     </div>

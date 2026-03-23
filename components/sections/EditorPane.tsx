@@ -16,12 +16,7 @@ export function EditorPane({
   activeTab,
   onCloseTab,
   onSetActiveTab,
-  isMobile,
-  skillCategories,
-  personalInfo,
-  education,
-  certificates,
-  experiences,
+  techIcons,
 }: EditorPaneProps) {
   const activeLines =
     openTabs.length === 0 || SPECIAL_TABS.has(activeTab)
@@ -50,7 +45,7 @@ export function EditorPane({
             <p>{'// open a file from the sidebar'}</p>
           </div>
         ) : (
-          <CodeViewer lines={activeLines} />
+          <CodeViewer lines={activeLines} techIcons={techIcons} />
         )}
       </div>
     </main>
