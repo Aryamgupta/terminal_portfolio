@@ -21,12 +21,12 @@ const SettingsPage = () => {
   const [message, setMessage] = useState({ type: "", text: "" });
 
   const generateJson = trpc.system.generateJson.useMutation({
-    onSuccess: (data) => {
+    onSuccess: () => {
       setMessage({ 
         type: "success", 
-        text: `Data source generated successfully at ${new Date(data.exportedAt).toLocaleTimeString()}.` 
+        text: `Data source generated successfully at ${new Date().toLocaleTimeString()}.` 
       });
-    },
+    },  
     onError: (err) => {
       setMessage({ type: "error", text: err.message });
     }
