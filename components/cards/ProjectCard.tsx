@@ -58,17 +58,32 @@ export default function ProjectCard({
       <div
         style={{
           height: "150px",
-          background: project.imageLink
-            ? `url(${project.imageLink}) center/cover no-repeat`
-            : "linear-gradient(135deg, #010C15, #01182a)",
+          background: (project as Project & { imageSvg?: string | null }).imageSvg
+            ? "transparent"
+            : project.imageLink
+              ? `url(${project.imageLink}) center/cover no-repeat`
+              : "linear-gradient(135deg, #010C15, #01182a)",
           position: "relative",
           borderBottom: "1px solid #1E2D3D",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          padding: "0",
         }}
       >
-        {!project.imageLink && (
+        {(project as Project & { imageSvg?: string | null }).imageSvg ? (
+          <div
+            dangerouslySetInnerHTML={{ __html: (project as Project & { imageSvg?: string | null }).imageSvg || "" }}
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            className="[&>svg]:w-full [&>svg]:h-full"
+          />
+        ) : !project.imageLink && (
           <span style={{ color: "#1E2D3D", fontSize: "36px" }}>{"</>"}</span>
         )}
         {/* Tech Icons Overlay - Top Right */}

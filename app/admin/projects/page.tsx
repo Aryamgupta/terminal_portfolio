@@ -65,6 +65,7 @@ export default function ProjectsAdminPage() {
     title: "",
     description: "",
     imageLink: "",
+    imageSvg: "",
     link: "",
     date: "",
     featured: false,
@@ -88,11 +89,30 @@ export default function ProjectsAdminPage() {
     },
   });
 
+  const convertMutation = trpc.project.convertImage.useMutation();
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const base64 = event.target?.result as string;
+      convertMutation.mutate({ imageBase64: base64 }, {
+        onSuccess: (data) => {
+          setFormData(prev => ({ ...prev, imageSvg: data.svg }));
+        }
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
   const resetForm = () => {
     setFormData({
       title: "",
       description: "",
       imageLink: "",
+      imageSvg: "",
       link: "",
       date: "",
       featured: false,
@@ -108,6 +128,7 @@ export default function ProjectsAdminPage() {
     title: string;
     description: string;
     imageLink?: string | null;
+    imageSvg?: string | null;
     techStack?: string[];
     link?: string | null;
     date?: string | null;
@@ -119,6 +140,7 @@ export default function ProjectsAdminPage() {
       title: project.title,
       description: project.description,
       imageLink: project.imageLink || "",
+      imageSvg: project.imageSvg || "",
       link: project.link || "",
       date: project.date || "",
       featured: project.featured || false,
@@ -338,9 +360,69 @@ export default function ProjectsAdminPage() {
                   <InputField
                     label="Hero Image Link"
                     placeholder="https://example.com/image.jpg"
-                    value={formData.imageLink}
+                    value={formData.imageLink || ""}
                     onChange={(v) => setFormData({ ...formData, imageLink: v })}
                   />
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    <label style={{ fontSize: "14px", color: "#607B96", fontFamily: "monospace" }}>{"// upload project image (converts to SVG)"}</label>
+                    <div style={{
+                      display: "flex",
+                      gap: "16px",
+                      alignItems: "center"
+                    }}>
+                      <div style={{
+                        flex: 1,
+                        position: "relative",
+                        height: "45px",
+                        backgroundColor: "rgba(0,0,0,0.2)",
+                        border: "1px solid #1E2D3D",
+                        borderRadius: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "0 12px",
+                        cursor: "pointer"
+                      }}>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            opacity: 0,
+                            cursor: "pointer",
+                            width: "100%"
+                          }}
+                        />
+                        <span style={{ color: "#607B96", fontSize: "13px" }}>
+                          {convertMutation.isPending ? "Converting..." : "Select image file..."}
+                        </span>
+                      </div>
+                      
+                      {formData.imageSvg && (
+                        <div style={{
+                          width: "45px",
+                          height: "45px",
+                          backgroundColor: "rgba(67, 217, 173, 0.1)",
+                          border: "1px solid #43D9AD",
+                          borderRadius: "8px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "6px",
+                          color: "#43D9AD"
+                        }}>
+                          <div 
+                            dangerouslySetInnerHTML={{ __html: formData.imageSvg }}
+                            style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}
+                            className="[&>svg]:w-full [&>svg]:h-full [&>svg]:fill-current"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   <InputField
                     label="deployment.url"
                     placeholder="https://mycoolproject.com"
@@ -583,7 +665,19 @@ export default function ProjectsAdminPage() {
                       justifyContent: "center",
                     }}
                   >
-                    {project.imageLink ? (
+                    {(project as Project & { imageSvg?: string | null }).imageSvg ? (
+                      <div 
+                        dangerouslySetInnerHTML={{ __html: (project as Project & { imageSvg?: string | null }).imageSvg || "" }}
+                        style={{ 
+                          width: "100%", 
+                          height: "100%", 
+                          display: "flex", 
+                          alignItems: "center", 
+                          justifyContent: "center",
+                        }}
+                        className="[&>svg]:w-full [&>svg]:h-full [&>svg]:fill-current"
+                      />
+                    ) : project.imageLink ? (
                       <Image
                         src={project.imageLink}
                         alt={project.title}
