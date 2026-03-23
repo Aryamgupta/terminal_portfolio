@@ -32,7 +32,6 @@ export const skillCategoryRouter = router({
     .mutation(async ({ input }) => {
       const { id, ...data } = input;
 
-      console.log({data});
       if (id) {
         return await prisma.skillCategory.update({
           where: { id },

@@ -19,7 +19,6 @@ export default function ContactPageContent({ personalInfo, socialLinks }: Contac
   });
 
 
-  console.log({personalInfo})
   const toggleSection = (k: string) => setSidebarOpen((p) => ({ ...p, [k]: !p[k] }));
 
   const handleSubmit = (e: React.FormEvent) => {

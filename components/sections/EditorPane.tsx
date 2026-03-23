@@ -23,7 +23,6 @@ export function EditorPane({
       ? []
       : (initialContent[activeTab]?.lines ?? ["// (empty)"]);
 
-    console.log({activeLines});
 
   return (
     <main className={styles.editorPane} role="main">

@@ -28,7 +28,6 @@ const SyncControls = () => {
   const syncMutation = trpc.system.generateModuleJson.useMutation({
     onSuccess: (data) => {
       // Could add a toast here
-      console.log("Modular Sync Success:", data);
     }
   });
 

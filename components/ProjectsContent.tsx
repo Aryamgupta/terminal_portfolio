@@ -179,7 +179,6 @@ export default function ProjectsContent({
       </button>
     </div>
   );
-  console.log(uniqueFilters);
 
   const filterList = (
     <div style={{ padding: "8px 0" }}>

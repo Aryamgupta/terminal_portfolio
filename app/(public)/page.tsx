@@ -20,7 +20,6 @@ async function getHomeData() {
 export default async function HomePage() {
   const { name, role, githubLink } = await getHomeData();
 
-  console.log({ role });
 
   return (
     <div
