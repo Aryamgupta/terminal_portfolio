@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+
+import React, { useState } from "react";
 import styles from "./ResumeButton.module.css";
 
 interface ResumeButtonProps {
@@ -8,30 +9,39 @@ interface ResumeButtonProps {
 }
 
 export function ResumeButton({ name, resumeLink }: ResumeButtonProps) {
+  const [isDownloading, setIsDownloading] = useState(false);
   if (!resumeLink) return null;
+
+  const getDownloadLink = (url: string) => {
+    const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+
+    if (!match) return url;
+
+    return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+  };
 
   const handleDownload = async () => {
     try {
-      const res = await fetch(resumeLink);
-
-      console.log({ resumeLink });
-
-      if (!res.ok) throw new Error("Failed to fetch file");
-
-      const blob = await res.blob();
-
-      const url = window.URL.createObjectURL(blob);
+      setIsDownloading(true);
 
       const a = document.createElement("a");
-      a.href = url;
-      a.download = `${name ? `${name.split(" ").join("_")}_` : ""}Resume.pdf`; // file name
+      a.href = getDownloadLink(resumeLink);
+      a.rel = "noopener noreferrer";
+
+      a.download = `${name ? `${name.replace(/\s+/g, "_")}_` : ""
+        }Resume.pdf`;
+
       document.body.appendChild(a);
       a.click();
-
       a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Download failed:", err);
+
+      // keep loading briefly for smoother UX
+      setTimeout(() => {
+        setIsDownloading(false);
+      }, 1200);
+    } catch (error) {
+      console.error(error);
+      setIsDownloading(false);
     }
   };
 
@@ -39,11 +49,18 @@ export function ResumeButton({ name, resumeLink }: ResumeButtonProps) {
     <div className={styles.container}>
       <button
         onClick={handleDownload}
-        className={styles.button}
+        disabled={isDownloading}
+        className={`${styles.button} ${isDownloading ? styles.loading : ""
+          }`}
         aria-label="Download resume"
       >
-        <span className={styles.icon}>⬇</span>
-        <span className={styles.text}>download-resume</span>
+        <span className={styles.icon}>
+          {!isDownloading && "⬇"}
+        </span>
+
+        <span className={styles.text}>
+          {isDownloading ? "downloading..." : "download-resume"}
+        </span>
       </button>
     </div>
   );
