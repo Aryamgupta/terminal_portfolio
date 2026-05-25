@@ -6,34 +6,104 @@ import { PersonalInfo } from "@prisma/client";
 import { kv } from "@vercel/kv";
 
 export async function generateMetadata() {
-  const personalInfoData = await kv.get("personal-info");
-  const personalInfo =
-    (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
+  let personalInfo: PersonalInfo | null = null;
+  try {
+    const personalInfoData = await kv.get("personal-info");
+    personalInfo = (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
+  } catch (e) {
+    console.error("Failed to load personal info for metadata", e);
+  }
+
   const faviconUrl = personalInfo?.faviconId
     ? `/api/icon/${personalInfo.faviconId}`
     : "/favicon.ico";
 
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const name = personalInfo?.name || "Aryam Gupta";
+  const description =
+    personalInfo?.bio?.[0] ||
+    "Full Stack Developer | Next.js, React, TypeScript";
+
+  const roles = personalInfo?.role || ["Front-end developer"];
+  const keywords = [
+    "developer",
+    "portfolio",
+    "software engineer",
+    "web development",
+    "full stack",
+    ...roles,
+  ];
+
   return {
-    title: personalInfo?.name
-      ? `${personalInfo.name} | Developer Portfolio`
-      : "Aryam Gupta | Developer Portfolio",
-    description:
-      personalInfo?.bio?.[0] ||
-      "Full Stack Developer | Next.js, React, TypeScript",
+    metadataBase: new URL(baseUrl),
+    title: {
+      default: `${name} | Developer Portfolio`,
+      template: `%s | ${name}`,
+    },
+    description,
+    keywords,
+    authors: [{ name }],
+    creator: name,
     icons: {
       icon: faviconUrl,
+    },
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: "/",
+      title: `${name} | Developer Portfolio`,
+      description,
+      siteName: `${name} Portfolio`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${name} | Developer Portfolio`,
+      description,
+      creator: personalInfo?.twitterLink ? `@${personalInfo.twitterLink.split("/").pop()}` : undefined,
     },
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  let personalInfo: PersonalInfo | null = null;
+  try {
+    const personalInfoData = await kv.get("personal-info");
+    personalInfo = (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
+  } catch (e) {
+    console.error("Failed to load personal info for JSON-LD structured data", e);
+  }
+
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: personalInfo?.name || "Aryam Gupta",
+    url: baseUrl,
+    jobTitle: personalInfo?.role?.[0] || "Software Developer",
+    location: personalInfo?.location ? {
+      "@type": "Place",
+      name: personalInfo.location,
+    } : undefined,
+    email: personalInfo?.email || undefined,
+    telephone: personalInfo?.phone || undefined,
+    sameAs: [
+      personalInfo?.githubLink,
+      personalInfo?.linkedinLink,
+      personalInfo?.twitterLink,
+    ].filter(Boolean),
+  };
+
   return (
     <html lang="en">
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <Providers>{children}</Providers>
 
         <style>{`

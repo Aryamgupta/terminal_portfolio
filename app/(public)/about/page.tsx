@@ -57,9 +57,83 @@ async function getAboutData() {
   };
 }
 
+export async function generateMetadata() {
+  let personalInfo: PersonalInfo | null = null;
+  let skills: { categories: SkillCategory[] } = { categories: [] };
+  try {
+    const [personalInfoData, skillsData] = await Promise.all([
+      kv.get("personal-info"),
+      kv.get("skills"),
+    ]);
+    personalInfo = (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
+    skills = (
+      skillsData as KVResponse<{
+        categories: SkillCategory[];
+        icons: TechIcon[];
+      }>
+    )?.data || { categories: [], icons: [] };
+  } catch (e) {
+    console.error("Failed to load about page metadata", e);
+  }
+
+  const name = personalInfo?.name || "Aryam Gupta";
+  const bioLine = personalInfo?.bio?.[0] || "";
+  const skillsList = skills.categories.flatMap((cat) => cat.skills.map((s) => s.name));
+
+  return {
+    title: "About Me",
+    description: bioLine || `Learn more about ${name}, education, certificates, experience, and skill set.`,
+    keywords: [
+      "About Me",
+      "Developer Background",
+      "Skills",
+      "Experience",
+      "Education",
+      ...skillsList,
+    ],
+    openGraph: {
+      title: `About Me | ${name}`,
+      description: bioLine || `Learn more about ${name}'s background and skills.`,
+      url: "/about",
+    },
+    twitter: {
+      title: `About Me | ${name}`,
+      description: bioLine || `Learn more about ${name}'s background and skills.`,
+    },
+  };
+}
+
 export const revalidate = 5000;
 
 export default async function AboutPage() {
   const data = await getAboutData();
-  return <AboutPageContent {...(data as unknown as AboutPageProps)} />;
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": baseUrl,
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "About",
+        "item": `${baseUrl}/about`,
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <AboutPageContent {...(data as unknown as AboutPageProps)} />
+    </>
+  );
 }
