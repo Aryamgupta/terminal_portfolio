@@ -20,8 +20,16 @@ export async function generateMetadata() {
 
   const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
   const name = personalInfo?.name || "Aryam Gupta";
+  const bioLines = personalInfo?.bio || [];
+  const cleanedBio = bioLines
+    .map(line => line.trim())
+    .filter(line => line !== "/**" && line !== "*/" && line !== "/*" && line !== "*")
+    .map(line => line.startsWith("*") ? line.replace(/^\*\s*/, "") : line)
+    .filter(Boolean)
+    .join(" ");
+
   const description =
-    personalInfo?.bio?.[0] ||
+    cleanedBio ||
     "Full Stack Developer | Next.js, React, TypeScript";
 
   const roles = personalInfo?.role || ["Front-end developer"];

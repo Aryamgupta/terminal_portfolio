@@ -77,12 +77,23 @@ export async function generateMetadata() {
   }
 
   const name = personalInfo?.name || "Aryam Gupta";
-  const bioLine = personalInfo?.bio?.[0] || "";
+  const bioLines = personalInfo?.bio || [];
+  const cleanedBio = bioLines
+    .map(line => line.trim())
+    .filter(line => line !== "/**" && line !== "*/" && line !== "/*" && line !== "*")
+    .map(line => line.startsWith("*") ? line.replace(/^\*\s*/, "") : line)
+    .filter(Boolean)
+    .join(" ");
+
   const skillsList = skills.categories.flatMap((cat) => cat.skills.map((s) => s.name));
+
+  const description =
+    cleanedBio ||
+    `Learn more about ${name}, education, certificates, experience, and skill set.`;
 
   return {
     title: "About Me",
-    description: bioLine || `Learn more about ${name}, education, certificates, experience, and skill set.`,
+    description,
     keywords: [
       "About Me",
       "Developer Background",
@@ -93,12 +104,12 @@ export async function generateMetadata() {
     ],
     openGraph: {
       title: `About Me | ${name}`,
-      description: bioLine || `Learn more about ${name}'s background and skills.`,
+      description,
       url: "/about",
     },
     twitter: {
       title: `About Me | ${name}`,
-      description: bioLine || `Learn more about ${name}'s background and skills.`,
+      description,
     },
   };
 }
