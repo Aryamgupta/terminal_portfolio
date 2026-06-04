@@ -11,7 +11,7 @@ async function getHomeData() {
   return {
     name: personalInfo?.name || "Aryam Gupta",
     role: personalInfo?.role || ["Front-end developer"],
-    githubLink: personalInfo?.githubLink || "https://github.com/aryam-gupta",
+    githubLink: personalInfo?.githubLink || "https://github.com/Aryamgupta",
   };
 }
 
