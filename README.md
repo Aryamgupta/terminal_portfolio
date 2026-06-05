@@ -1,36 +1,142 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⌨️ Terminal & IDE-Themed Developer Portfolio
 
-## Getting Started
+A high-performance, responsive developer portfolio designed to mimic an Integrated Development Environment (IDE) / Code Editor, complete with a terminal UI, code workspace, collapsible directory trees, and interactive games. 
 
-First, run the development server:
+Built with **Next.js 16 (App Router)**, **tRPC (v11)**, **Prisma**, **MongoDB**, **Vercel KV (Redis)**, and **Tailwind CSS v4**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 📸 Screenshots
+
+### 💻 Home Page (Interactive Snake Game)
+![Home Page](public/screenshots/home.png)
+
+### 📁 Projects View (Dynamic Filter & Search)
+![Projects View](public/screenshots/projects.png)
+
+### 👤 About Me
+![About Me](public/screenshots/about.png)
+
+### ✉️ Contact & Console
+![Contact Page](public/screenshots/contact.png)
+
+---
+
+## 🚀 Key Features
+
+*   **🎨 Code Editor Workspace Layout:** Mimics VS Code/IDE with tab-based navigation (`_hello`, `_about-me`, `_projects`, `_contact-me`), line numbers, code-like typography, collapsible file tree sidebar, and syntax highlighting aesthetics.
+*   **🐍 Interactive Snake Game:** Fully playable retro Snake Game integrated directly on the home page. Visitors can play using arrow keys/buttons, or skip it to unlock their path.
+*   **⚡ Blazing-Fast Hybrid Architecture (MongoDB + Redis Cache):**
+    *   **Reads:** Public pages fetch content directly from **Vercel KV (Redis)** for sub-millisecond data delivery, completely avoiding MongoDB latency.
+    *   **Writes/CRUD:** The admin dashboard interacts with **MongoDB** via **Prisma** to manage all portfolio data. An on-demand sync mechanism pushes changes to Vercel KV.
+*   **🔐 High-Security OTP-based Admin Panel:** Secure access using **NextAuth.js** with a customized **2-Factor Email OTP login flow** restricted to the administrator's email.
+*   **📨 Real-Time Messages:** Contact form that records visitor messages in the database and triggers email notifications via **Nodemailer**.
+*   **🛠️ Modular Admin Tools:** Complete administrative console featuring:
+    *   Profile, Education, and Work Experience managers.
+    *   Project manager (supporting tech stack associations and ordering).
+    *   Dynamic SVG Custom Icon manager.
+    *   Production redeploy trigger and modular cache-aside JSON synchronizer.
+
+---
+
+## 🧱 Tech Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Framework** | Next.js 16 (App Router, Server Components), React 19 |
+| **Styling** | Tailwind CSS v4, PostCSS, Framer Motion (Animations), Lucide Icons |
+| **API Architecture** | tRPC v11 (End-to-end type-safe queries/mutations) |
+| **Database ORM** | Prisma ORM & MongoDB Node Driver |
+| **Primary Storage** | MongoDB Atlas (Persisted portfolio state) |
+| **Caching / KV Store**| Vercel KV / Upstash Redis (Public read caching) |
+| **Authentication** | NextAuth.js (JWT-based session management with custom OTP provider) |
+| **Email Services** | Nodemailer (for sending admin OTP and message alerts) |
+
+---
+
+## ⚙️ Architecture Flow
+
+```mermaid
+graph TD
+    subgraph Client / Visitor
+        V[Public Visitor] -->|Read Request| KV[(Vercel KV Cache)]
+        V -->|Send Message| API_TRPC[tRPC API Endpoint]
+    end
+
+    subgraph Admin Console
+        A[Administrator] -->|OTP Login| NextAuth[NextAuth Authentication]
+        A -->|Manage Content / CRUD| Admin_TRPC[tRPC Protected Endpoints]
+        Admin_TRPC -->|Save / Update| DB[(MongoDB Persistent DB)]
+        Admin_TRPC -->|Trigger Sync / Redeploy| Sync[Sync Engine]
+        Sync -->|Update Cache| KV
+        Sync -->|Trigger Vercel Build| Vercel[Vercel Deploy Hook]
+    end
+    
+    API_TRPC -->|Save Message| DB
+    API_TRPC -->|Email Notification| SMTP[Nodemailer / SMTP]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Installation & Local Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Prerequisites
+Ensure you have the following installed:
+*   [Node.js](https://nodejs.org/) (v18.x or above)
+*   [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) / [pnpm](https://pnpm.io/)
+*   A running [MongoDB](https://www.mongodb.com/) Database (e.g., MongoDB Atlas)
+*   A running [Upstash Redis](https://upstash.com/) or [Vercel KV](https://vercel.com/docs/storage/vercel-kv) instance
 
-## Learn More
+### 2. Clone and Install Dependencies
+```bash
+git clone https://github.com/Aryamgupta/terminal_portfolio.git
+cd terminal_portfolio
+npm install
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Configure Environment Variables
+Copy `.env.example` to `.env` and fill in your credentials:
+```bash
+cp .env.example .env
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Review the values in `.env`:
+*   `DATABASE_LINK`: Your MongoDB connection string.
+*   `KV_URL` & `KV_REST_API_TOKEN`: Your Upstash Redis / Vercel KV details.
+*   `EMAIL_SERVER_*`: SMTP settings for sending authentication OTP emails.
+*   `NEXTAUTH_SECRET`: A secure random secret key.
+*   `ADMIN_PIN`: Initial pin/passcode configuration.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4. Initialize Database Schemas
+Generate the Prisma Client and push schemas to your MongoDB instance:
+```bash
+npx prisma generate
+npx prisma db push
+```
 
-## Deploy on Vercel
+### 5. Start Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) with your browser to view the application.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔒 Administrative Login & OTP Flow
+
+This project implements a passwordless, high-security email OTP authentication system:
+1. Access the login screen at `/admin/login`.
+2. The user enters their email (restricted by default to `aryamgupta4@gmail.com` in `lib/auth.ts`).
+3. If the email matches, the backend generates a 6-digit verification code, stores it in MongoDB with a short expiry, and emails it using the configured SMTP server.
+4. Input the received verification code at `/admin/verify-2fa` to authenticate your session.
+5. Once authenticated, access the Dashboard at `/admin/dashboard` to sync data, trigger production redeploys, or edit details.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for more details.
+
+---
+
+Created with ❤️ by **[Aryam Gupta](https://aryam.info)**.
