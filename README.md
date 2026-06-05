@@ -139,4 +139,4 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for more 
 
 ---
 
-Created with ❤️ by **[Aryam Gupta](https://aryam.info)**.
+Created by **[Aryam Gupta](https://aryam.info)**.
