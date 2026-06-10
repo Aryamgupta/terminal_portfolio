@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Folder, FileText, ChevronDown } from "lucide-react";
+import { Folder, FileText, ChevronDown, Menu } from "lucide-react";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function Loading() {
+  const isMobile = useIsMobile();
   const [logs, setLogs] = useState<string[]>([]);
   const [showSpinner, setShowSpinner] = useState(false);
 
@@ -77,15 +79,15 @@ export default function Loading() {
       {/* File Explorer Sidebar Skeleton */}
       <aside
         style={{
-          width: "250px",
           backgroundColor: "#011221",
-          borderRight: "1px solid #1E2D3D",
-          display: "flex",
           flexDirection: "column",
           flexShrink: 0,
           overflow: "hidden",
+          transition: "transform 0.3s ease, width 0.25s ease",
+          width: isMobile ? "240px" : "250px",
+          borderRight: "1px solid #1E2D3D",
         }}
-        className="hidden md:flex"
+        className="fixed md:relative top-0 bottom-0 left-0 md:top-auto md:bottom-auto md:left-auto z-50 md:z-auto h-full md:h-auto flex -translate-x-full md:translate-x-0"
       >
         <div
           style={{
@@ -153,6 +155,37 @@ export default function Loading() {
 
       {/* Editor Content Area Skeleton */}
       <main style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", backgroundColor: "#011627" }}>
+        
+        {/* Mobile File Explorer Trigger Header */}
+        <div 
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "8px 16px",
+            backgroundColor: "#011221",
+            borderBottom: "1px solid #1E2D3D"
+          }}
+          className="flex md:hidden"
+        >
+          <div 
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              color: "#43D9AD",
+              fontFamily: "monospace",
+              fontSize: "12px",
+            }}
+          >
+            <Menu size={16} />
+            <span>explorer</span>
+          </div>
+          <span style={{ color: "#607B96", fontSize: "11px", fontFamily: "monospace" }}>
+            _readme
+          </span>
+        </div>
+
         {/* Editor Tab Bar Skeleton */}
         <div
           style={{
@@ -163,6 +196,7 @@ export default function Loading() {
             overflowX: "auto",
             scrollbarWidth: "none",
           }}
+          className="hidden md:flex"
         >
           <div
             style={{

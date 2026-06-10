@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import {
   Folder,
   FileCode,
@@ -52,6 +53,7 @@ type TabType =
   | "lessons";
 
 export default function ProjectWorkspace({ project, techIconMap }: Props) {
+  const isMobile = useIsMobile();
   // Parse caseStudy with memoization to keep reference stable across renders
   const data = React.useMemo(() => {
     if (!project.caseStudy) return null;
@@ -726,19 +728,28 @@ export default function ProjectWorkspace({ project, techIconMap }: Props) {
 
   return (
     <div style={{ display: "flex", height: "100%", overflow: "hidden", backgroundColor: "#011627" }}>
+      {/* Translucent Backdrop overlay for Mobile Explorer Drawer */}
+      {isMobile && isMobileExplorerOpen && (
+        <div 
+          onClick={() => setIsMobileExplorerOpen(false)}
+          className="fixed inset-0 bg-black/60 z-40 transition-opacity duration-300 md:hidden"
+        />
+      )}
+
       {/* File Explorer Sidebar */}
       <aside
         style={{
-          width: isSidebarOpen ? "250px" : "0",
-          transition: "width 0.25s ease",
           backgroundColor: "#011221",
-          borderRight: isSidebarOpen ? "1px solid #1E2D3D" : "none",
-          display: "flex",
           flexDirection: "column",
           flexShrink: 0,
-          overflow: "hidden"
+          overflow: "hidden",
+          transition: "transform 0.3s ease, width 0.25s ease",
+          width: isMobile ? "240px" : (isSidebarOpen ? "250px" : "0"),
+          borderRight: (isMobile ? isMobileExplorerOpen : isSidebarOpen) ? "1px solid #1E2D3D" : "none"
         }}
-        className="hidden md:flex"
+        className={`fixed md:relative top-0 bottom-0 left-0 md:top-auto md:bottom-auto md:left-auto z-50 md:z-auto h-full md:h-auto flex ${
+          isMobile && isMobileExplorerOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
       >
         <div style={{
           padding: "10px 16px",
@@ -747,9 +758,21 @@ export default function ProjectWorkspace({ project, techIconMap }: Props) {
           fontFamily: "monospace",
           textTransform: "uppercase",
           borderBottom: "1px solid #1E2D3D",
-          letterSpacing: "1px"
+          letterSpacing: "1px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between"
         }}>
-          Explorer
+          <span>Explorer</span>
+          {isMobile && (
+            <button 
+              onClick={() => setIsMobileExplorerOpen(false)}
+              style={{ background: "none", border: "none", color: "#607B96", cursor: "pointer", fontSize: "14px" }}
+              aria-label="Close explorer"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         {/* Directory Structure */}
@@ -850,52 +873,6 @@ export default function ProjectWorkspace({ project, techIconMap }: Props) {
           </span>
         </div>
 
-        {/* Mobile File Tree overlay */}
-        {isMobileExplorerOpen && (
-          <div style={{
-            position: "absolute",
-            top: "85px",
-            left: 0,
-            right: 0,
-            backgroundColor: "#011221",
-            borderBottom: "1px solid #1E2D3D",
-            zIndex: 100,
-            padding: "12px 0",
-            display: "flex",
-            flexDirection: "column"
-          }}>
-            {(Object.keys(tabConfig) as TabType[]).map((tab) => {
-              if (!data && tab !== "readme" && tab !== "package") return null;
-              const config = tabConfig[tab];
-              const isActive = activeTab === tab;
-
-              return (
-                <button
-                  key={tab}
-                  onClick={() => handleTabClick(tab)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    padding: "10px 24px",
-                    backgroundColor: isActive ? "rgba(30, 45, 61, 0.4)" : "transparent",
-                    color: isActive ? "#FFFFFF" : "#607B96",
-                    fontSize: "12px",
-                    fontFamily: "monospace",
-                    cursor: "pointer",
-                    border: "none",
-                    width: "100%",
-                    textAlign: "left"
-                  }}
-                >
-                  <span style={{ color: config.color }}>{config.icon}</span>
-                  <span>{config.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        )}
-
         {/* Tab Headers bar */}
         <div 
           style={{
@@ -993,9 +970,9 @@ export default function ProjectWorkspace({ project, techIconMap }: Props) {
             <span>src/projects/{activeTab === "readme" ? "README.md" : activeTab === "package" ? "package.json" : activeTab + ".json"}</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <span>UTF-8</span>
-            <span>TypeScript JSX</span>
-            <span>Ln 1, Col 1</span>
+            <span className="hidden sm:inline">UTF-8</span>
+            <span className="hidden md:inline">TypeScript JSX</span>
+            <span className="hidden lg:inline">Ln 1, Col 1</span>
           </div>
         </footer>
       </main>
