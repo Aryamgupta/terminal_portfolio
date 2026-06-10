@@ -964,28 +964,7 @@ export default function ProjectWorkspace({ project, techIconMap }: Props) {
         {/* Workspace Code Editor Panel */}
         <div style={{ flex: 1, overflowY: "auto", display: "flex" }}>
           
-          {/* Editor Line Numbers (Code Theme Accent) */}
-          <div style={{
-            width: "48px",
-            borderRight: "1px solid #1E2D3D",
-            backgroundColor: "#010C15",
-            padding: "32px 0",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "2px",
-            color: "rgba(96, 123, 150, 0.2)",
-            fontSize: "12px",
-            fontFamily: "'Fira Code', monospace",
-            userSelect: "none",
-            flexShrink: 0
-          }}
-          className="hidden md:flex"
-          >
-            {Array.from({ length: 45 }).map((_, i) => (
-              <span key={i}>{i + 1}</span>
-            ))}
-          </div>
+
 
           {/* Actual tab content rendering panel */}
           <div style={{ flex: 1, minWidth: 0 }}>
