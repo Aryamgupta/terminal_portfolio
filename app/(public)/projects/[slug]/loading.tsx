@@ -84,10 +84,24 @@ export default function Loading() {
           flexShrink: 0,
           overflow: "hidden",
           transition: "transform 0.3s ease, width 0.25s ease",
-          width: isMobile ? "240px" : "250px",
-          borderRight: "1px solid #1E2D3D",
+          ...(!isMobile ? {
+            width: "250px",
+            borderRight: "1px solid #1E2D3D",
+            display: "flex",
+          } : {
+            position: "fixed",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            zIndex: 50,
+            width: "240px",
+            height: "100%",
+            display: "flex",
+            borderRight: "1px solid #1E2D3D",
+            transform: "translateX(-100%)",
+          })
         }}
-        className="fixed md:relative top-0 bottom-0 left-0 md:top-auto md:bottom-auto md:left-auto z-50 md:z-auto h-full md:h-auto flex -translate-x-full md:translate-x-0"
+        className={isMobile ? "transition-transform" : ""}
       >
         <div
           style={{
@@ -157,34 +171,35 @@ export default function Loading() {
       <main style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", backgroundColor: "#011627" }}>
         
         {/* Mobile File Explorer Trigger Header */}
-        <div 
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "8px 16px",
-            backgroundColor: "#011221",
-            borderBottom: "1px solid #1E2D3D"
-          }}
-          className="flex md:hidden"
-        >
+        {isMobile && (
           <div 
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "8px",
-              color: "#43D9AD",
-              fontFamily: "monospace",
-              fontSize: "12px",
+              justifyContent: "space-between",
+              padding: "8px 16px",
+              backgroundColor: "#011221",
+              borderBottom: "1px solid #1E2D3D"
             }}
           >
-            <Menu size={16} />
-            <span>explorer</span>
+            <div 
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                color: "#43D9AD",
+                fontFamily: "monospace",
+                fontSize: "12px",
+              }}
+            >
+              <Menu size={16} />
+              <span>explorer</span>
+            </div>
+            <span style={{ color: "#607B96", fontSize: "11px", fontFamily: "monospace" }}>
+              _readme
+            </span>
           </div>
-          <span style={{ color: "#607B96", fontSize: "11px", fontFamily: "monospace" }}>
-            _readme
-          </span>
-        </div>
+        )}
 
         {/* Editor Tab Bar Skeleton */}
         <div
