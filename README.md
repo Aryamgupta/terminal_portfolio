@@ -25,6 +25,8 @@ Built with **Next.js 16 (App Router)**, **tRPC (v11)**, **Prisma**, **MongoDB**,
 ## 🚀 Key Features
 
 *   **🎨 Code Editor Workspace Layout:** Mimics VS Code/IDE with tab-based navigation (`_hello`, `_about-me`, `_projects`, `_contact-me`), line numbers, code-like typography, collapsible file tree sidebar, and syntax highlighting aesthetics.
+*   **📂 VS Code-Themed Dynamic Case Study Workspace:** Interactive VS Code-styled code editor interface for detailed project walk-throughs under `/projects/[slug]`. Features multi-tab navigation (`README.md`, `package.json`, etc.), clickable interactive package dependency grids, retro loading skeleton layouts, and a fully responsive collapsible sidebar drawer with tap-to-dismiss backdrops on mobile device screens.
+*   **🤖 AI-Powered Case Study Engine (Google Gemini AI):** Automatically fetches and imports codebase contexts (including public READMEs or private repository codebases via Personal Access Tokens). Generates professional, deep-dive project summaries, feature breakdowns, lighthouse metric mockups, and dependency descriptions using Gemini AI with automatic API quota health checks and model-switching failover.
 *   **🐍 Interactive Snake Game:** Fully playable retro Snake Game integrated directly on the home page. Visitors can play using arrow keys/buttons, or skip it to unlock their path.
 *   **⚡ Blazing-Fast Hybrid Architecture (MongoDB + Redis Cache):**
     *   **Reads:** Public pages fetch content directly from **Vercel KV (Redis)** for sub-millisecond data delivery, completely avoiding MongoDB latency.
@@ -46,6 +48,7 @@ Built with **Next.js 16 (App Router)**, **tRPC (v11)**, **Prisma**, **MongoDB**,
 | **Framework** | Next.js 16 (App Router, Server Components), React 19 |
 | **Styling** | Tailwind CSS v4, PostCSS, Framer Motion (Animations), Lucide Icons |
 | **API Architecture** | tRPC v11 (End-to-end type-safe queries/mutations) |
+| **Generative AI** | Google Gemini API (Dynamic model-switching, codebase ingestion) |
 | **Database ORM** | Prisma ORM & MongoDB Node Driver |
 | **Primary Storage** | MongoDB Atlas (Persisted portfolio state) |
 | **Caching / KV Store**| Vercel KV / Upstash Redis (Public read caching) |
