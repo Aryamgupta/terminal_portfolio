@@ -1,15 +1,16 @@
 import "./globals.css";
 import React from "react";
 import { Providers } from "./providers";
-import { KVResponse } from "./(public)/about/page";
 import { PersonalInfo } from "@prisma/client";
-import { kv } from "@vercel/kv";
+import { getCachedData } from "@/lib/cache";
+import { prisma } from "@/lib/prisma";
 
 export async function generateMetadata() {
   let personalInfo: PersonalInfo | null = null;
   try {
-    const personalInfoData = await kv.get("personal-info");
-    personalInfo = (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
+    personalInfo = await getCachedData<PersonalInfo | null>("personal-info", () =>
+      prisma.personalInfo.findFirst()
+    );
   } catch (e) {
     console.error("Failed to load personal info for metadata", e);
   }
@@ -79,8 +80,9 @@ export default async function RootLayout({
 }) {
   let personalInfo: PersonalInfo | null = null;
   try {
-    const personalInfoData = await kv.get("personal-info");
-    personalInfo = (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
+    personalInfo = await getCachedData<PersonalInfo | null>("personal-info", () =>
+      prisma.personalInfo.findFirst()
+    );
   } catch (e) {
     console.error("Failed to load personal info for JSON-LD structured data", e);
   }

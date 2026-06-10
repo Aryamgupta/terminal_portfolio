@@ -1,31 +1,28 @@
 import ProjectsContent from "@/components/ProjectsContent";
 import { Project, SkillCategory, TechIcon, PersonalInfo } from "@prisma/client";
-import { kv } from "@vercel/kv";
-
-type KVResponse<T> = {
-  data: T;
-  exportedAt: string;
-};
+import { getCachedData } from "@/lib/cache";
+import { prisma } from "@/lib/prisma";
 
 async function getProjectsData() {
-  const [projectsData, skillsData] = await Promise.all([
-    kv.get("projects"),
-    kv.get("skills"),
+  const [projects, skills] = await Promise.all([
+    getCachedData<Project[]>("projects", () =>
+      prisma.project.findMany({
+        orderBy: { order: "asc" },
+      })
+    ),
+    getCachedData<{ categories: SkillCategory[]; icons: TechIcon[] }>("skills", async () => {
+      const [categories, icons] = await Promise.all([
+        prisma.skillCategory.findMany(),
+        prisma.techIcon.findMany(),
+      ]);
+      return { categories, icons };
+    }),
   ]);
-
-  const projects = (projectsData as KVResponse<Project[]>)?.data || [];
-
-  const skills = (
-    skillsData as KVResponse<{
-      categories: SkillCategory[];
-      icons: TechIcon[];
-    }>
-  )?.data || { categories: [], icons: [] };
 
   return {
     projects,
-    techIcons: skills.icons,
-    skillCategories: skills.categories,
+    techIcons: skills?.icons || [],
+    skillCategories: skills?.categories || [],
   };
 }
 
@@ -33,12 +30,18 @@ export async function generateMetadata() {
   let personalInfo: PersonalInfo | null = null;
   let projects: Project[] = [];
   try {
-    const [personalInfoData, projectsData] = await Promise.all([
-      kv.get("personal-info"),
-      kv.get("projects"),
+    const [personalInfoVal, projectsVal] = await Promise.all([
+      getCachedData<PersonalInfo | null>("personal-info", () =>
+        prisma.personalInfo.findFirst()
+      ),
+      getCachedData<Project[]>("projects", () =>
+        prisma.project.findMany({
+          orderBy: { order: "asc" },
+        })
+      ),
     ]);
-    personalInfo = (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
-    projects = (projectsData as KVResponse<Project[]>)?.data || [];
+    personalInfo = personalInfoVal;
+    projects = projectsVal || [];
   } catch (e) {
     console.error("Failed to load projects page metadata", e);
   }

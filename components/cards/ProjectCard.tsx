@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { Project } from "@prisma/client";
-
-function slugify(title: string) {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
+import { getProjectSlug } from "@/lib/slugs";
+import Link from "next/link";
 
 export default function ProjectCard({
   project,
@@ -18,7 +13,7 @@ export default function ProjectCard({
   techIconMap: Record<string, string>;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const slug = slugify(project.title);
+  const slug = getProjectSlug(project.title);
   const techIds = (project as Project & { techIds?: string[] }).techIds || [];
   const techStack = project.techStack || [];
 
@@ -163,70 +158,87 @@ export default function ProjectCard({
             color: "#607B96",
             fontSize: "12px",
             fontFamily: "'Fira Code', monospace",
-            lineHeight: "1.7",
+            lineHeight: "1.6",
             flex: 1,
             display: "flex",
             flexDirection: "column",
           }}
         >
           <p style={{ margin: 0 }}>
-            {isExpanded || project.description.length <= 160
+            {project.description.length <= 160
               ? project.description
               : `${project.description.substring(0, 160)}...`}
           </p>
-          {project.description.length > 160 && (
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#43D9AD",
-                padding: 0,
-                marginTop: "4px",
-                cursor: "pointer",
-                fontFamily: "'Fira Code', monospace",
-                fontSize: "11px",
-                textAlign: "left",
-                width: "fit-content"
-              }}
-            >
-              {isExpanded ? "// read-less" : "// read-more"}
-            </button>
-          )}
         </div>
 
-        {project.link && (
-          <a
-            href={project.link}
-            target="_blank"
-            rel="noreferrer"
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            marginTop: "auto",
+            flexWrap: "wrap"
+          }}
+        >
+          <Link
+            href={`/projects/${slug}`}
             style={{
               display: "inline-block",
               padding: "5px 12px",
-              background: "transparent",
-              border: "1px solid #1E2D3D",
+              background: "rgba(67, 217, 173, 0.1)",
+              border: "1px solid rgba(67, 217, 173, 0.3)",
               borderRadius: "6px",
-              color: "#607B96",
+              color: "#43D9AD",
               fontSize: "11px",
               fontFamily: "'Fira Code', monospace",
               textDecoration: "none",
               transition: "all 0.2s",
-              alignSelf: "flex-start",
             }}
             onMouseOver={(e) => {
               const el = e.currentTarget as HTMLElement;
+              el.style.backgroundColor = "rgba(67, 217, 173, 0.2)";
               el.style.borderColor = "#43D9AD";
-              el.style.color = "#43D9AD";
             }}
             onMouseOut={(e) => {
               const el = e.currentTarget as HTMLElement;
-              el.style.borderColor = "#1E2D3D";
-              el.style.color = "#607B96";
+              el.style.backgroundColor = "rgba(67, 217, 173, 0.1)";
+              el.style.borderColor = "rgba(67, 217, 173, 0.3)";
             }}
           >
-            view-project
-          </a>
-        )}
+            read-more
+          </Link>
+
+          {project.link && (
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: "inline-block",
+                padding: "5px 12px",
+                background: "transparent",
+                border: "1px solid #1E2D3D",
+                borderRadius: "6px",
+                color: "#607B96",
+                fontSize: "11px",
+                fontFamily: "'Fira Code', monospace",
+                textDecoration: "none",
+                transition: "all 0.2s",
+              }}
+              onMouseOver={(e) => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.borderColor = "#43D9AD";
+                el.style.color = "#43D9AD";
+              }}
+              onMouseOut={(e) => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.borderColor = "#1E2D3D";
+                el.style.color = "#607B96";
+              }}
+            >
+              view-project
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );

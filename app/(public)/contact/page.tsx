@@ -1,21 +1,21 @@
 import ContactPageContent from "@/components/ContactPageContent";
 import { PersonalInfo } from "@/types/types-about";
 import { SocialLink } from "@/types/types-contact";
-import { kv } from "@vercel/kv";
-
-type KVResponse<T> = {
-  data: T;
-  exportedAt: string;
-};
+import { getCachedData } from "@/lib/cache";
+import { prisma } from "@/lib/prisma";
+import { PersonalInfo as PrismaPersonalInfo } from "@prisma/client";
 
 async function getContactData() {
-  const [personalInfoData, socialLinksData] = await Promise.all([
-    kv.get("personal-info"),
-    kv.get("social-links"),
+  const [personalInfo, socialLinks] = await Promise.all([
+    getCachedData<PersonalInfo | null>("personal-info", () =>
+      prisma.personalInfo.findFirst() as any
+    ),
+    getCachedData<SocialLink[]>("social-links", () =>
+      prisma.socialLinks.findMany({
+        orderBy: { platform: "asc" },
+      })
+    ),
   ]);
-
-  const personalInfo = (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
-  const socialLinks = (socialLinksData as KVResponse<SocialLink[]>)?.data || [];
 
   return {
     personalInfo,
@@ -27,8 +27,9 @@ async function getContactData() {
 export async function generateMetadata() {
   let personalInfo: PersonalInfo | null = null;
   try {
-    const personalInfoData = await kv.get("personal-info");
-    personalInfo = (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
+    personalInfo = await getCachedData<PersonalInfo | null>("personal-info", () =>
+      prisma.personalInfo.findFirst() as any
+    );
   } catch (e) {
     console.error("Failed to load contact page metadata", e);
   }

@@ -1,13 +1,13 @@
 import SnakeGame from "@/components/SnakeGame";
 import TypeWritterRole from "@/components/TypeWritterRole";
 import { PersonalInfo } from "@prisma/client";
-import { kv } from "@vercel/kv";
-import { KVResponse } from "./about/page";
+import { getCachedData } from "@/lib/cache";
+import { prisma } from "@/lib/prisma";
 
 async function getHomeData() {
-  const personalInfoData = await kv.get("personal-info");
-  const personalInfo =
-    (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
+  const personalInfo = await getCachedData<PersonalInfo | null>("personal-info", () =>
+    prisma.personalInfo.findFirst()
+  );
   return {
     name: personalInfo?.name || "Aryam Gupta",
     role: personalInfo?.role || ["Front-end developer"],

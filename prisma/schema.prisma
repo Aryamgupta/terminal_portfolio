@@ -24,17 +24,21 @@ model PersonalInfo {
 }
 
 model Project {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  imageLink   String?
-  imageSvg    String?
-  description String
-  techStack   String[]
-  link        String?
-  date        String?
-  featured    Boolean  @default(false)
-  order       Int      @default(0)
-  techIds     String[] @db.ObjectId
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  imageLink      String?
+  imageSvg       String?
+  description    String
+  techStack      String[]
+  link           String?
+  date           String?
+  featured       Boolean  @default(false)
+  order          Int      @default(0)
+  techIds        String[] @db.ObjectId
+  caseStudy      String?
+  githubUrl      String?
+  githubRepoType String?  @default("PUBLIC")
+  customReadme   String?
 }
 
 model Education {

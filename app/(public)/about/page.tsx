@@ -8,51 +8,44 @@ import {
   SkillCategory,
   TechIcon,
 } from "@prisma/client";
-import { kv } from "@vercel/kv";
-
-export type KVResponse<T> = {
-  data: T;
-  exportedAt: string;
-};
+import { getCachedData } from "@/lib/cache";
+import { prisma } from "@/lib/prisma";
 
 async function getAboutData() {
   const [
-    personalInfoData,
-    educationData,
-    certificatesData,
-    skillsData,
-    experienceData,
+    personalInfo,
+    education,
+    certificates,
+    skills,
+    experiences,
   ] = await Promise.all([
-    kv.get("personal-info"),
-    kv.get("education"),
-    kv.get("certificates"),
-    kv.get("skills"),
-    kv.get("experience"),
+    getCachedData<PersonalInfo | null>("personal-info", () =>
+      prisma.personalInfo.findFirst()
+    ),
+    getCachedData<Education[]>("education", () =>
+      prisma.education.findMany({ orderBy: { year: "asc" } })
+    ),
+    getCachedData<Certificate[]>("certificates", () =>
+      prisma.certificate.findMany()
+    ),
+    getCachedData<{ categories: SkillCategory[]; icons: TechIcon[] }>("skills", async () => {
+      const [categories, icons] = await Promise.all([
+        prisma.skillCategory.findMany(),
+        prisma.techIcon.findMany(),
+      ]);
+      return { categories, icons };
+    }),
+    getCachedData<Experience[]>("experience", () =>
+      prisma.experience.findMany({ orderBy: { order: "asc" } })
+    ),
   ]);
-
-  const personalInfo =
-    (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
-
-  const education = (educationData as KVResponse<Education[]>)?.data || [];
-
-  const certificates =
-    (certificatesData as KVResponse<Certificate[]>)?.data || [];
-
-  const skills = (
-    skillsData as KVResponse<{
-      categories: SkillCategory[];
-      icons: TechIcon[];
-    }>
-  )?.data || { categories: [], icons: [] };
-
-  const experiences = (experienceData as KVResponse<Experience[]>)?.data || [];
 
   return {
     personalInfo,
     education,
     certificates,
-    skillCategories: skills.categories,
-    techIcons: skills.icons,
+    skillCategories: skills?.categories || [],
+    techIcons: skills?.icons || [],
     experiences,
   };
 }
@@ -61,17 +54,20 @@ export async function generateMetadata() {
   let personalInfo: PersonalInfo | null = null;
   let skills: { categories: SkillCategory[] } = { categories: [] };
   try {
-    const [personalInfoData, skillsData] = await Promise.all([
-      kv.get("personal-info"),
-      kv.get("skills"),
+    const [personalInfoVal, skillsVal] = await Promise.all([
+      getCachedData<PersonalInfo | null>("personal-info", () =>
+        prisma.personalInfo.findFirst()
+      ),
+      getCachedData<{ categories: SkillCategory[]; icons: TechIcon[] }>("skills", async () => {
+        const [categories, icons] = await Promise.all([
+          prisma.skillCategory.findMany(),
+          prisma.techIcon.findMany(),
+        ]);
+        return { categories, icons };
+      }),
     ]);
-    personalInfo = (personalInfoData as KVResponse<PersonalInfo | null>)?.data || null;
-    skills = (
-      skillsData as KVResponse<{
-        categories: SkillCategory[];
-        icons: TechIcon[];
-      }>
-    )?.data || { categories: [], icons: [] };
+    personalInfo = personalInfoVal;
+    skills = skillsVal || { categories: [], icons: [] };
   } catch (e) {
     console.error("Failed to load about page metadata", e);
   }
