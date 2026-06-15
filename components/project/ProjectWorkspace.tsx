@@ -728,6 +728,20 @@ export default function ProjectWorkspace({ project, techIconMap }: Props) {
 
   return (
     <div style={{ display: "flex", height: "100%", overflow: "hidden", backgroundColor: "#011627" }}>
+      {/* Visually hidden H1 for SEO heading hierarchy compliance */}
+      <h1 style={{
+        position: "absolute",
+        width: "1px",
+        height: "1px",
+        padding: "0",
+        margin: "-1px",
+        overflow: "hidden",
+        clip: "rect(0, 0, 0, 0)",
+        border: "0"
+      }}>
+        {project.title} - Case Study
+      </h1>
+
       {/* Translucent Backdrop overlay for Mobile Explorer Drawer */}
       {isMobile && isMobileExplorerOpen && (
         <div 
